@@ -1,32 +1,24 @@
 # Connector Developer Guidelines
 
-Integration Connectors are extensions to the integration runtime of WSO2 (compatible with EI 6.x, EI 7.x, as well as APIM 4.0.0). This enables developers to interact with SaaS applications on the cloud, databases, and popular B2B protocols.
+Connectors are essential components in WSO2 Micro Integrator that enable seamless integration between various systems, APIs, and services. They act as bridges, facilitating communication and data exchange, thereby simplifying complex integration workflows.
 
-Connectors are hosted in a connector store and can be added to integration flows in WSO2 Integration Studio, which is the tooling component for developing integrations. Once added, the operations of the connector can be dragged onto your canvas and added to your sequences and proxy services.
-
-Each connector provides a set of operations, which you can call from your proxy services, sequences, and APIs to interact with the specific third-party service.
-
-This document is an in-depth guide for developers to follow when developing a new connector from scratch. It aims to cover the initial steps to be followed, best practices, and details the means of implementing the UI schema for Integration Studio support.
+This document is an in-depth guide for developers to follow when developing new connectors for WSO2 Micro Integrator. It covers the initial steps, best practices, and details on implementing the UI schema, output schema for auto-completion, and testing the connector.
 
 ## Connector Architecture
 
-A connector is a collection or a set of operations that can be used in the integration flow to access a specific service or functionality. These operations are invoked from proxy services, sequences, and APIs to interact.
+A connector is a collection or a set of operations that can be used in the integration flow to access a specific service or functionality. These operations are invoked from APIs, Sequences and Inbound Endpoints.
 
 * A connector operation is made using [sequence templates]({{base_path}}/reference/synapse-properties/template-properties/). 
+* A connection is implemented using the `init` operation. This init operation is invoked before any operation is performed. Connections can be reused across operations.
 * The integration logic inside a connector operation is constructed using mediators. 
 * The integration logic inside a connector operation needs some custom functionality not provided by mediators, a java implementation can be attached to the associated sequence template. This is using the Custom Class Mediator approach. 
-* If the third-party service provider provides a Java SDK to interact with the service, connector operation can use them extending the java implementation. 
+* If the third-party service provider provides a Java SDK to interact with the service, connector operation can use them extending the java implementation.
 
 <img src="{{base_path}}/assets/img/integrate/connectors/dev-connectors.png" title="Developing Connectors" width="800" alt="Developing Connectors"/>
 
-### Connector Types
-
-There are two types of connectors.
-
-* Application/SaaS connectors - Connects to cloud applications. These are implemented purely using WSO2 mediators and constructs. E.g., Amazon S3, Salesforce
-* Technology connectors - Implements different B2B protocols. Logic for these are implemented using mainly Java. E.g., JMS, NATS, Email.
-
 ### Connector Structure
+
+TODO: improve this section
 
 The typical folder structure of a connector is as follows.
 
@@ -64,7 +56,11 @@ The typical folder structure of a connector is as follows.
 * **src/main/resources/connector.xml** - Contains the connector information.
 * **src/test** - Contains the test cases.
 
-### About the connector.xml file
+### Components
+
+The primary components of the connector are as follows.
+
+#### connector.xml
 
 All the operations exposed by the connector should be registered in this file. The syntax is as follows.
 
@@ -111,7 +107,7 @@ For example, according to the sample above, it contains two subdirectories named
                   └── operation1.xml
 ```
 
-### Subdirectory containing operations
+#### Subdirectory containing operations
 
 Resources folder is used to group the operations in the connector in a more organized manner. 
 
@@ -185,7 +181,7 @@ The following is a sample available in the component.xml file.
 <component name="sample" type="synapse/template">
 ```
 
-### Operation
+#### Operation
 
 An operation of an integration connector is implemented using a [synapse template](https://docs.wso2.com/display/EI611/Sequence+Template) as mentioned before.
 A typical template configuration for an operation would look like below.
@@ -238,7 +234,7 @@ The following is a sample code extracted from operation1.xml
 <template xmlns="http://ws.apache.org/ns/synapse" name="operation1">
 ```
 
-### Invoking an operation
+#### Invoking an operation
 
 When invoking an operation from the main integration flow, the connector name defined in the `connector.xml` would be appended to the respective operation. Invoking the operation would look similar to the following.
 
@@ -247,6 +243,18 @@ When invoking an operation from the main integration flow, the connector name de
 	<hostName>localhost</hostName>
 </sample.operation1>
 ```
+
+#### UI Schema
+
+The UI schema is used to define the input parameters for the operations. The UI schema is defined in the `component.xml` file. The UI schema is used to render the input parameters in the VSCode Extension or Integration Studio.
+
+#### Connection
+
+A connection is a configuration that is used to connect to a specific instance of a service. A connector is a set of operations that can be used to interact with a service. For example, to access a Salesforce instance, you must create a Salesforce connection. Based on your requirement, you can create multiple connections for a connector type, and each connection is uniquely identified by its name. A connector can have multiple connection types. For example, the Email connector can have IMAP, POP3, and SMTP connections. 
+
+The connection configuration is defined in the `init` operation. The `init` operation is invoked before any operation is performed. The Connection types are implemented the using the uischema.
+
+
 
 ## Writing Your First Connector
 
@@ -787,64 +795,6 @@ Sometimes it is required to handle errors within the connector. Sometimes it is 
 
 Please read the [WSO2 Error Code guide]({{base_path}}/reference/troubleshooting/error-handling-mi). 
 
-**Write test cases**
-
-## Input and Output schema
-
-Input and output schema can be defined for connectors so that a [datamapper mediator]({{base_path}}/reference/mediators/data-mapper-mediator/) can be used to easily transform the payloads required for each operation.
-
-These schemas are placed inside `/resources` under `input_schema` and `output_schema` folders.
-
-### Input schema
-
-Maps the input format required for the operation. For example:
-
-Operation
-
-```xml
-<template xmlns="http://ws.apache.org/ns/synapse" name="sample">
-   <parameter name="param" description="Sample parameter."/>
-   <sequence>
-       <property name="param" expression="$func:param"/>
-   </sequence>
-</template>
-```
-
-Input Schema
-
-```json
-{
- "$schema":"http:\/\/wso2.org\/json-schema\/wso2-data-mapper-v5.0.0\/schema#",
- "id":"http:\/\/wso2jsonschema.org",
- "title":"root",
- "type":"object",
- "properties":{
-   "source":{
-     "id":"http:\/\/wso2jsonschema.org\/param",
-     "type":"string"
-   }
-}
-```
-
-### Output schema
-
-Maps the out format of the operation.
-
-Output Schema
-```json
-{
- "$schema":"http:\/\/wso2.org\/json-schema\/wso2-data-mapper-v5.0.0\/schema#",
- "id":"http:\/\/wso2jsonschema.org",
- "title":"result",
- "type":"object",
- "properties":{
-   "success":{
-     "id":"http:\/\/wso2jsonschema.org\/success",
-     "type":"boolean"
-   }
- }
-}
-```
 
 ## The UI schema
 
