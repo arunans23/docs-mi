@@ -3,12 +3,11 @@
 The **Data Service Call Mediator** is used to invoke data service operations. It automatically creates a payload and sets up the necessary headers to invoke the data service. Also, it improves the performance by directly calling the data service (without HTTP transport).
 
 !!! Info
-    - You need to first have a [Data Service Project]({{base_path}}/develop/creating-artifacts/data-services/creating-data-services) to use the Data Service Call mediator.
-    - The Data Service Call mediator is a [content-aware]({{base_path}}/reference/mediators/about-mediators/#classification-of-mediators)  mediator.
+    You need to first have a [Data Service Project]({{base_path}}/develop/creating-artifacts/data-services/creating-data-services) to use the Data Service Call mediator.
 
 ## Syntax
 
-``` java
+```xml
 <dataServiceCall serviceName="data-service-name">
    <source [type="inline" | "body"]/>
    <operations [type="single" | "batch" | "request-box"] >
@@ -454,7 +453,7 @@ http://localhost:8290/services/dssCallMediatorSourceTypeBodyProxy
 ``` 
 
 ```xml
-<<request_box>
+<request_box>
    <addEmployee>
       <EmployeeNumber>888</EmployeeNumber>
       <Firstname>William</Firstname>
@@ -533,5 +532,5 @@ http://localhost:8290/services/testDSSResposeTarget
 The following log will appear in the server console:
 
 ```bash
-INFO {LogMediator} - {proxy:test} reponseValue = SUCCESSFUL
+INFO {LogMediator} - {proxy:test} responseValue = SUCCESSFUL
 ```

@@ -1,4 +1,4 @@
-# Installation Prerequisites
+# WSO2 Micro Integrator Installation Prerequisites
 
 Prior to installing WSO2 Micro Integrator, make sure that the appropriate prerequisites are fulfilled.
 
@@ -53,77 +53,47 @@ Prior to installing WSO2 Micro Integrator, make sure that the appropriate prereq
 - It is not recommended to use Apache DS in a production environment due to scalability issues. Instead, use an LDAP like OpenLDAP as your user store.
 - If you have difficulty in setting up the Micro Integrator in a specific platform or database, [contact us](https://wso2.com/contact/).
 
-## Tested Environments
+## Tested environments
 
-<table>
-    <tr>
-        <th>JDK</th>
-        <th>Operating Systems</th>
-        <th>RDBMS</th>
-    </tr>
-    <tr>
-        <td>
-            <ul>
-                <li>
-                CorrettoJDK 11, 17
-                </li>
-                <li>
-                AdoptOpenJDK 11, 17
-                </li>
-                <li>
-                OpenJDK 11, 17
-                </li>
-                <li>
-                Oracle JDK 11, 17
-                </li>
-            </ul>
-        </td>
-        <td>
-            <ul>
-                <li>
-         Ubuntu 18.04
-                </li>
-                <li>
-         SUSE Linux 12
-                </li>
-                <li>
-         Windows 2019
-                </li>
-                <li>
-         MacOS 10.15
-                </li>
-                <li>
-         CentOS 7.5
-                </li>
-                <li>
-         RHEL 7.4, 8.2
-                </li>
-            </ul>
-        </td>
-        <td>
-            <ul>
-                <li>
-           Microsoft SQL Server 2017
-                </li>
-                <li>
-           MySql 8.0
-                </li>
-                <li>
-           MariaDB 10.5
-                </li>
-                <li>
-           PostgreSQL 12.2, 13.2 
-                </li>
-                <li>
-           DB2 11.5
-                </li>
-                <li>
-           Oracle 19c
-                </li>
-                <li>
-           Oracle 12c
-                </li>
-            </ul>
-        </td>
-    </tr>
-</table>
+The details of the tested environments for the WSO2 Micro Integrator (MI) 4.4.0 runtimes are given below.
+
+### Tested operating systems
+
+The Micro Integrator runtime is tested with the following operating systems:
+
+| Operating System         | Versions   |
+|--------------------------|------------|
+| Windows                  | 2025       |
+| Ubuntu                   | 24.04      |
+| Red Hat Enterprise Linux | 9   |
+| Rocky Linux              | 9.5       |
+| MacOS                    | 14.6      |
+| SUSE Linux               | 15         |
+
+### Tested JDKs
+
+The Micro Integrator runtime is tested with the following JDKs:
+
+| JDK         |Versions|
+|-------------|--------|
+| CorrettoJDK | 11, 17, 21 |
+| AdoptOpenJDK | 11, 17, 21 |
+| OpenJDK     | 11, 17, 21 |
+| Oracle JDK  | 11, 17, 21 |
+
+### Tested DBMSs
+
+The Micro Integrator runtime is tested with the following databases:
+
+| DBMS                 | Versions           |
+|----------------------|--------------------|
+| MySQL                | 9             |
+| Oracle               | 12c release 2, 19c |
+| Microsoft SQL Server | 2022               |
+| PostgreSQL           | 17.2         |
+| MariaDB              | 10.5               |
+| DB2                  | 11.5               |
+
+### ARM compatibility
+
+WSO2 Micro Integrator is compatible with ARM processors. It can run on ARM-based systems, such as those with Apple Silicon or ARM-based Linux distributions.

@@ -1,20 +1,21 @@
-# Service Orchestration
+# How to Expose Several Services as a Single Service
 
 ## What you'll build
 
 When information from several services is required to construct a response to a client request, service chaining needs to be implemented. This means integrating several services based on some business logic and exposing them as a single, aggregated service.
 
-In this tutorial, when a client sends a request for a medical appointment, the Micro Integrator performs several service calls to multiple back-end services to construct a response that includes all the necessary details. The **Call** mediator allows you to specify all service invocations one after the other within a single sequence.
+In this tutorial, when a client sends a request for a medical appointment, the Micro Integrator performs several service calls to multiple back-end services to construct a response that includes all the necessary details. The <a target="_blank" href="{{base_path}}/reference/connectors/http-connector/http-connector-overview/">HTTP connector</a> will be used to invoke services sequentially within a single integration flow.
 
-You will also use the **PayloadFactory** mediator to take the response from one back-end service and transform it into the format accepted by another back-end service.
+You will also use the <a target="_blank" href="{{base_path}}/reference/mediators/payloadfactory-mediator/">Payload mediator</a> to transform the response from one back-end service into the format required by another service.
+
+<a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/what_you_will_build.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/what_you_will_build.png" alt="service orchestration" width="80%"></a>
 
 ### Concepts and artifacts used
 
--   REST API
--   HTTP Endpoint
--   Property Mediator
--   Call Mediator
--   PayloadFactory Mediator
+-   [REST API]({{base_path}}/reference/synapse-properties/rest-api-properties)
+-   [HTTP Connector]({{base_path}}/reference/connectors/http-connector/http-connector-overview)
+-   [Variable Mediator]({{base_path}}/reference/mediators/variable-mediator)
+-   [Payload Mediator]({{base_path}}/reference/mediators/payloadfactory-mediator)
 
 ## Let's get started!
 
@@ -30,194 +31,100 @@ Follow the instructions given in this section to create and configure the requir
 
 {!includes/create-new-project.md!}
 
-4. In the **Project Creation Form**, enter `SampleServices` as the **Project Name**.
+4. In the **Project Creation Form**, enter `ExposeSeveralServicesTutorial` as the **Project Name**.
 
 5. Provide a location under **Select Project Directory**.
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/create-new-project.png"><img src="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/create-new-project.png" alt="create new project" width="80%"></a>
+    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/create-new-project.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/create-new-project.png" alt="create new project" width="80%"></a>
 
 6. Click **Create**.
 
 Now let's start designing the integration by adding the necessary artifacts.
 
-#### Create new Endpoints
+#### Create HTTP connections
 
-Let's create three HTTP endpoints to represent all three back-end services: Hospital Service, Channeling Service, and Payment Service.
+Let's create an HTTP connection to represent all three back-end services: Hospital Service, Channeling Service, and Payment Service.
 
-1. Navigate to the **MI Project Explorer** > **Endpoints**.
+1. Navigate to **MI Project Explorer**.
+2. Click on **Add artifact**.
 
-    <a href="{{base_path}}/assets/img/develop/create-artifacts/create-endpoint/create-new-endpoint.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-endpoint/create-new-endpoint.png" alt="create new endpoint" width="30%"></a>
+    <a href="{{base_path}}/assets/img/develop/create-artifacts/add-artifact-icon.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/add-artifact-icon.png" alt="add artifact" width="40%"></a>
 
-2. Hover over **Endpoints** and click the **+** icon that appears.
+3. Click **+ View More** under **Create an Integration**.
+4. Select **Connections** under **Other Artifacts** to open the **Connector Store Form**.
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/add-endpoint.png"><img src="{{base_path}}/assets/img/learn/tutorials/add-endpoint.png" alt="Add endpoint" width="30%"></a>
+    <a href="{{base_path}}/assets/img/integrate/connectors/connections-artifact.png"><img src="{{base_path}}/assets/img/integrate/connectors/connections-artifact.png" alt="connections artifact" width="80%"></a>
 
-3. Next, select **HTTP Endpoint** type from the **Create Endpoint Artifact** interface.
+5. Select **HTTP**.
+6. In the **Add New Connection** form, specify the following values to create the new HTTP connection.
 
-    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/create-http-endpoint.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/create-http-endpoint.png" alt="Create HTTP Endpoint" width="60%"></a>
+     <table>
+         <thead>
+           <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Description</th>
+           </tr>
+         </thead>
+         <tbody>
+           <tr>
+              <td>Connection Name</td>
+              <td><code>CommonServiceConn</code></td>
+              <td>The name of the connection.</td>
+           </tr>
+           <tr>
+              <td>Base URL</td>
+              <td>
+                 <code>http://localhost:9090</code>
+              </td>
+              <td>The base URL used to send requests to the back-end service.</td>
+           </tr>
+         </tbody>
+     </table>
 
-4. In the **HTTP Endpoint Form** that appears, specify the following values to create the new endpoint.
+7. Click **Add**.
 
-    <table>
-        <tr>
-            <th>Property</th>
-            <th>Value</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>Endpoint Name </td>
-            <td>
-                <code>HospitalServicesEP</code>
-            </td>
-            <td>
-                This is a single endpoint configured to forward requests to the relevant hospital by reading the hospital specified in the request payload.
-            </td>
-        </tr>
-        <tr>
-            <td>URI Template</td>
-            <td>
-                <code>http://localhost:9090/{uri.var.hospital}/categories/{uri.var.category}/reserve</code>
-            </td>
-            <td>
-                The template for the request URL expected by the back-end service. The following two variables will be replaced by the corresponding values in the request message:
-                <ul>
-                  <li>{uri.var.hospital}</li>
-                  <li>{uri.var.category}</li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td>Method</td>
-            <td>
-                <code>POST</code>
-            </td>
-            <td>
-                Endpoint HTTP REST Method.
-            </td>
-        </tr>
-    </table>
-
-5.  Click **Create**.
-   
-6.  Create another **HTTP Endpoint** for the Channeling back-end service and specify the details given below:
-   
-    <table>
-        <tr>
-            <th>Property</th>
-            <th>Value</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>Endpoint Name</td>
-            <td>`ChannelingFeeEP`</td>
-            <td>The name of the endpoint.</td>
-        </tr>
-        <tr>
-            <td>URI Template</td>
-            <td><code>http://localhost:9090/{uri.var.hospital}/categories/appointments/{uri.var.appointment_id}/fee</code></td>
-            <td>
-                The template for the request URL expected by the back-end service. The following two variables will be replaced by the corresponding values in the request message:
-                <ul>
-                  <li>{uri.var.hospital}: This will be the hospital ID extracted from the original request payload.</li>
-                  <li>{uri.var.appointment_id}: This will be the appointment ID extracted from the response payload that is received from the hospital service.</li>
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td>Method</td>
-            <td>
-                <code>GET</code>
-            </td>
-            <td>
-                This endpoint artifact will be used to get information from the back-end service.
-            </td>
-        </tr>
-    </table>
-
-7.  Click **Create**.
-
-8.  Create another **HTTP Endpoint** for the Settle Payment back-end service and specify the details given below:
-   
-    <table>
-        <tr>
-            <th>Property</th>
-            <th>Value</th>
-            <th>Description</th>
-        </tr>
-        <tr>
-            <td>Endpoint Name</td>
-            <td>`SettlePaymentEP`</td>
-            <td>The name of the endpoint.</td>
-        </tr>
-        <tr>
-            <td>URI Template</td>
-            <td><code>http://localhost:9090/healthcare/payments</code></td>
-            <td>
-                The template for the request URL expected by the back-end service.
-            </td>
-        </tr>
-        <tr>
-            <td>Method</td>
-            <td>
-                <code>POST </code>
-            </td>
-            <td>
-                This endpoint artifact will be used to post information to the back-end service.
-            </td>
-        </tr>
-    </table>
-
-9.  Click **Create**.
-
-You have now created the endpoints that are required for this tutorial.
+You have now created the connection that is required for this tutorial.
 
 #### Create a REST API
 
-1. Go to **MI Project Explorer** > **APIs**.
-
-    <a href="{{base_path}}/assets/img/develop/create-artifacts/create-rest-api/create-rest-api.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-rest-api/create-rest-api.png" alt="create new api" width="30%"></a>
-
-2. Hover over **APIs** and click the **+** icon that appears to open the **API Form**.
-
-    <a href="{{base_path}}/assets/img/learn/tutorials/add-api.png"><img src="{{base_path}}/assets/img/learn/tutorials/add-api.png" alt="add API" width="30%"></a>
-
+1. In the **MI Project Explorer** click on **+ Add artifact**.
+2. Select **API** under **Create an Integration**.
 3. Specify values for the required REST API properties:
+
     <table>
-      <tr>
+    <tr>
         <th>Property</th>
-        <th>Value</th>
+        <th style="width: 140px">Value</th>
         <th>Description</th>
-      </tr>
-      <tr>
+    </tr>
+    <tr>
         <td>Name</td>
         <td><code>HealthcareAPI</code></td>
         <td>
-          The name of the REST API.
+            The name of the REST API.
         </td>
-      </tr>
-      <tr>
+    </tr>
+    <tr>
         <td>Context</td>
-        <td><code>/healthcare </code></td>
+        <td><code>/healthcare</code></td>
         <td>
-          Here you are anchoring the API in the <code>/healthcare </code> context. This will become part of the name of the generated URL used by the client when sending requests to the Healthcare service. For example, setting the context to /healthcare means that the API will only handle HTTP requests where the URL path starts with <code>http://host:port/healthcare<code>.
+            Here you are anchoring the API in the <code>/healthcare</code> context. This will become part of the name of the generated URL used by the client when sending requests to the Healthcare service. For example, setting the context to <code>/healthcare</code> means that the API will only handle HTTP requests where the URL path starts with <code>http://host:port/healthcare</code>.
         </td>
-      </tr>
-    <table>                                                    
-    <a href="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/synapse-api-artifact.png"><img src="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/synapse-api-artifact.png" alt="synapse API artifact" width="80%"></a>               
+    </tr>
+    </table>
+
+    <a href="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/create-api-artifact.png"><img src="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/create-api-artifact.png" alt="create API artifact" width="80%"></a>
 
 4. Click **Create**. This opens the **Service Designer** interface.
 
     You can now start configuring the API resource.
 
-5. Click on the `GET` API resource under **Available resources** on the **Service Designer**.
+5. On the Service Designer, click on the three dots (**⋮**) and then **Edit** to access the **Properties** of the default API resource.
 
-    You will now see the graphical view of the `HealthcareAPI` with its default API Resource.
+    <a href="{{base_path}}/assets/img/learn/tutorials/message-routing/edit-icon-api-resource.png"><img src="{{base_path}}/assets/img/learn/tutorials/message-routing/edit-icon-api-resource.png" alt="Edit API resource" width="70%"></a>
 
-6. Click the **Edit** icon to edit the API resource.
-
-    <a href="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/edit-icon.png"><img src="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/edit-icon.png" alt="edit icon" width="80%"></a>
-
-7. Specify values for the required resource properties:
+6. Enter the following details:
 
     <table>
     <tr>
@@ -226,17 +133,10 @@ You have now created the endpoints that are required for this tutorial.
         <th>Description</th>
     </tr>
     <tr>
-        <td>URI-Template</td>
+        <td>Resource Path</td>
         <td><code>/categories/{category}/reserve</code></td>
         <td>
-            The request URL should match this template. The {category} variable will be replaced with the value sent in the request.
-        </td>
-    </tr>
-    <tr>
-        <td>Url Style</td>
-        <td>`URI_TEMPLATE`</td>
-        <td>
-            You can now specify dynamic variables to extract values from the request URL.
+            The request URL should match this resource path. The <code>{category}</code> variable will be replaced with the value sent in the request.
         </td>
     </tr>
     <tr>
@@ -249,115 +149,132 @@ You have now created the endpoints that are required for this tutorial.
         </td>
     </tr>
     </table>
-8. Click **Update**.
+
+    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/edit-api-resource.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/edit-api-resource.png" alt="Edit API resource" width="30%"></a>
+
+7. Click **Update**.
 
 #### Update the mediation flow
 
 You can now start updating the API resource with the mediation flow.
 
-1. To get started, click on the **+** icon to add the first mediator to the sequence.
+1. To get started, click on the **Start** node on the canvas to set an input payload for the integration flow.
 
-2. Select **Property** mediator from the **Mediators** palette. This is used to extract the hospital name that is sent in the request payload. 
-   
-    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add-property-mediator.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add-property-mediator.png" alt="add property mediator" width="80%"></a>
+    !!! Note
+        Setting an input payload for the integration flow is not mandatory. However, it is recommended, as it will be used to enable expression suggestions which you will explore in later steps of this tutorial.
 
-3. With the **Property** mediator selected, access the **Properties** tab and give the following details:
-  <table>
-  <tr>
-  <th>Property</th>
-  <th>Value</th>
-  <th>Description</th>
-  </tr>
-  <tr>
-  <td>Property Name</td>
-  <td><code>uri.var.hospital</code></td>
-  <td>The name that will be used to refer to this property's values.</td>
-  </tr>
-  <tr>
-  <td>Property Action</td>
-  <td><code>set</code></td>
-  <td>The property action.</td>
-  </tr>
-  <tr>
-  <td>Property Data Type</td>
-  <td><code>String</code></td>
-  <td>The property data type.</td>
-  </tr>
-  <tr>
-  <td>Property Scope</td>
-  <td><code>default</code></td>
-  <td>The scope of the property.</td>
-  </tr>
-  <tr>
-  <td>Value (Expression)</td>
-  <td><code>json-eval(&#36;.hospital_id)</code></td>
-  <td>
-  <ol>
-  <li>
-  Click the <strong>Ex</strong> button before the <b>Value</b> field. This specifies the value type as <i>expression</i>.
-  </li>
-  <li>
-  Enter <code>json-eval($.hospital_id)</code> as the expression value.
-  </li>
-  </ol>
-  <b>Note</b>:
-  This is the JSONPath expression that will extract the hospital from the request payload.
-  </td>
-  </tr>
-  </table>
+2. Click **Add Request**, provide the following JSON payload, then click **Add**. Finally, click **Save** to complete the input payload setup.
 
-4. Click **Submit**.
+    ```json
+    {
+        "patient":{
+            "name":"John Doe",
+            "dob":"1940-03-19",
+            "ssn":"234-23-525",
+            "address":"California",
+            "phone":"8770586755",
+            "email":"johndoe@gmail.com"
+        },
+        "doctor":"thomas collins",
+        "hospital_id":"grandoaks",
+        "hospital":"grand oak community hospital",
+        "cardNo":"7844481124110331",
+        "appointment_date":"2025-04-02"
+    }
+    ```
 
-5. Add a new **Property** mediator just after the previous property mediator. This will retrieve and store the card number that was sent to the request payload.
+    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add_start_payload_service_chaining.gif"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add_start_payload_service_chaining.gif" alt="Add start payload" width="80%"></a>
 
-6. With the **Property** mediator selected, access the Properties tab and specify the following details:
-  <table>
-  <tr>
-  <th>Property</th>
-  <th>Value</th>
-  <th>Description</th>
-  </tr>
-  <tr>
-  <td>Property Name</td>
-  <td><code>card_number</code></td>
-  <td>The name of the property, which will be used to refer to this property.</td>
-  </tr>
-  <tr>
-  <td>Property Action</td>
-  <td><code>set</code></td>
-  <td>The property action.</td>
-  </tr>
-  <tr>
-  <td>Property Data Type</td>
-  <td><code>String</code></td>
-  <td>The property data type.</td>
-  </tr>
-  <tr>
-  <td>Value (Expression)</td>
-  <td><code>json-eval(&#36;.cardNo)</code></td>
-  <td>
-  <ol>
-  <li>Click the <strong>Ex</strong> button before the <b>Value</b> field. This specifies the value type as <i>expression</i>.</li>
-  <li>Enter <code>json-eval($.cardNo)</code> as the expression value.</li>
-  </ol>
-  <b>Note</b>:
-  This is the JSONPath expression that will extract the card number from the request payload.
-  </td>
-  </tr>
-  <tr>
-  <td>Description</td>
-  <td>Get Card Number</td>
-  <td>The description of the property.</td>
-  </tr>
-  </table>
+    We need to use the Hospital ID (`hospital_id`) and card number (`cardNo`) in multiple HTTP calls later in the integration flow. To avoid losing these values, we will store them using the <a target="_blank" href="{{base_path}}/reference/mediators/variable-mediator/">Variable mediator</a> so that they can be easily reused throughout the flow.
 
-7. Add a **Call** mediator from the **Mediators** palette. In the sequence palette, specify the endpoint as `HospitalServicesEP`. Click **Submit**.
+3. Click on the **+** icon on the canvas to open the **Mediator Palette**.
+
+4. Under **Mediators**, select the **Variable** mediator.
+
+    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add-variable-mediator.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add-variable-mediator.png" alt="add variable mediator" width="80%"></a>
+
+5. Provide `hospital_id` as the variable name. In the next, we will extract the Hospital ID from the incoming payload and assign it to this variable.
+
+6. Click on the expression (<img src="{{base_path}}/assets/img/common/enable_expression_icon.png" alt="expression icon" class="inline-icon">) icon to enable expression mode for the **Value** field.
+
+7. Once expressions are enabled, click on the expression editor (<img src="{{base_path}}/assets/img/common/expression_editor_icon.png" alt="expression editor" class="inline-icon">) icon to open the editor. Then, select **Payload** → **hospital_id** to extract the Hospital ID from the request payload.
+
+    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/service_chaining_hospital_id_var.gif"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/service_chaining_hospital_id_var.gif" alt="Extract Hospital ID" width="50%"></a>
+
+8. Click **Add** to insert the **Variable** mediator into the integration flow.
+
+9. Next, add a new **Variable** mediator right after the previous one. This mediator will extract and store the card number from the incoming payload.
+
+    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add_second_var.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add_second_var.png" alt="Add second variable" width="80%"></a>
+
+10. Similar to the previous steps, you can use the expression editor to select **Payload** → **cardNo**, or simply copy and paste the following details.
+
+    <table>
+        <tr>
+            <th>Property</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Name</td>
+            <td>Enter <code>CardNumber</code>.</td>
+        </tr>
+        <tr>
+            <td>Data Type</td>
+            <td>Select <code>STRING</code>.</td>
+        </tr>
+        <tr>
+            <td>Value</td>
+            <td>
+                <div class="content-wrapper">
+                    <p>Follow the steps given below to specify the expression value:</p>
+                    <ol>
+                        <li>Click the expression (<img src="{{base_path}}/assets/img/common/enable_expression_icon.png" alt="expression icon" class="inline-icon">) icon in the <b>Value</b> field. This specifies the value type as an <i>expression</i>.</li>
+                        <li>Enter <code>payload.cardNo</code> as the expression value.</li>
+                    </ol>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+11. Click **Add** to insert the second **Variable** mediator into the integration flow.
+
+12. Search for `post` in the **Mediator Palette** to add the **HTTP POST** operation after the **Variable** mediator.
+
+    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add_http_post.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add_http_post.png" alt="Add HTTP POST" width="80%"></a>
+
+13. In the pane that appears, specify the following values.
+
+    <table>
+        <tr>
+            <th>Property</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Connection</td>
+            <td>Select <code>CommonServiceConn</code>.</td>
+        </tr>
+        <tr>
+            <td>Relative Path</td>
+            <td><code>/\${vars.hospital_id}/categories/${params.pathParams.category}/reserve</code></td>
+        </tr>
+        <tr>
+            <td>Response Variable Name</td>
+            <td><code>HospitalServiceRes</code>.</td>
+        </tr>
+    </table>
+
+    !!! Note
+        We will leave the rest of the configurations as defaults: **Content Type** set to **JSON**, **Request Body** as `${payload}`, and **Overwrite Message Body** checked.
 
     !!! Info
-        Using the **Call** mediator allows us to define other service invocations following this mediator.
-  
-    !!! Note
-        The following response will be returned from GrandOakEP, ClemencyEP, or PineValleyEP:
+        - The output variable(<code>HospitalServiceRes</code>) of the HTTP call contains the following data:
+            - **Attributes** – Metadata such as the status code.
+            - **Headers** – The response headers of the HTTP call.
+
+        - The response body from the HTTP call will be assigned to the message payload, which you can access using the Synapse expression `${payload}`.
+
+    !!! Info
+        A response similar to the following will be returned from different hospital services such as GrandOaks, Clemency, or PineValley.
         ```json
         {
             "appointmentNumber": 1,
@@ -380,217 +297,136 @@ You can now start updating the API resource with the mediation flow.
             "confirmed": false
         }
         ```
-        Let's use Property mediators to retrieve and store the values that you get from the response you receive from GrandOakEP, ClemencyEP, or PineValleyEP.
+    Let's use Variable mediators to extract and store the `Appointment Number`, `Doctor`, and `Patient` details from the received response.
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add-call-mediator.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add-call-mediator.png" alt="add call mediator" width="80%"></a>
+14. Click on the **+** icon on the canvas to add another **Variable** mediator after the **HTTP POST** operation to extract and store the value received as `appointmentNumber`.
 
-8. Add another **Property** mediator after **Call** mediator to retrieve and store the value sent as `appointmentNumber`.
+15. In the **Add Variable Mediator** pane, provide the following details.
 
-9. With the **Property** mediator selected, access the Properties tab and specify the following details:
-  <table>
-  <thead>
-  <tr>
-  <th>Property</th>
-  <th>Value</th>
-  <th>Description</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <td>Property Name</td>
-  <td><code>uri.var.appointment_id</code></td>
-  <td>This value is used when invoking <b>ChannelingFeeEP</b></td>
-  </tr>
-  <tr>
-  <td>Property Action</td>
-  <td><p>Select <strong>set</strong></p></td>
-  <td>The action of the property</td>
-  </tr>
-  <tr>
-  <td>Property Data Type</td>
-  <td><code>String</code></td>
-  <td>The property data type.</td>
-  </tr>
-  <tr>
-  <td>Value (Expression)</td>
-  <td><code>json-eval(&#36;.appointmentNumber)</code></td>
-  <td>
-  <ol>
-  <li>Click the <strong>Ex</strong> button before the <b>Value</b> field. This specifies the value type as <i>expression</i>.</li>
-  <li>Enter <code>json-eval($.appointmentNumber)</code> as the expression value.</li>
-  </ol>
-  <b>Note</b>:
-  This is the JSONPath expression that will extract the appointment number from the request payload.
-  </td>
-  </tr>
-  <tr>
-  <td>Description</td>
-  <td>Get Appointment Number</td>
-  <td>The description of the property.</td>
-  </tr>
-  </tbody>
-  </table>
+    <table>
+        <tr>
+            <th>Property</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Name</td>
+            <td>Enter <code>AppointmentId</code>.</td>
+        </tr>
+        <tr>
+            <td>Data Type</td>
+            <td>Select <code>STRING</code>.</td>
+        </tr>
+        <tr>
+            <td>Value</td>
+            <td>
+                <div class="content-wrapper">
+                    <p>Follow the steps given below to specify the expression value:</p>
+                    <ol>
+                        <li>Click the expression (<img src="{{base_path}}/assets/img/common/enable_expression_icon.png" alt="expression icon" class="inline-icon">) icon in the <b>Value</b> field. This specifies the value type as an <i>expression</i>.</li>
+                        <li>Enter <code>payload.appointmentNumber</code> as the expression value.</li>
+                    </ol>
+                </div>
+            </td>
+        </tr>
+    </table>
 
-10. Similarly, add two more **Property** mediators. They will retrieve and store the `doctor` details and `patient` details respectively from the response that is received from GrandOakEP, ClemencyEP, or PineValleyEP.
+16. Similarly, add two more **Variable** mediators to extract and store the `doctor` and `patient` details from the received response.
 
     - To store `doctor` details:
-
-        <table>
+    <table>
         <tr>
-        <th>Property</th>
-        <th>Value</th>
-        <th>Description</th>
+            <th>Property</th>
+            <th>Description</th>
         </tr>
         <tr>
-        <td>Property Name</td>
-        <td>
-        <code>doctor_details</code>
-        </td>
-        <td>
-        The property name that will be used to refer to this property.
-        </td>
+            <td>Name</td>
+            <td>Enter <code>DoctorDetails</code>.</td>
         </tr>
         <tr>
-        <td>Property Action</td>
-        <td>
-        <strong>set</strong>
-        </td>
-        <td>
-        The property action name.
-        </td>
+            <td>Data Type</td>
+            <td>Select <code>JSON</code>.</td>
         </tr>
         <tr>
-        <td>Property Data Type</td>
-        <td><code>String</code></td>
-        <td>The property data type.</td>
+            <td>Value</td>
+            <td>
+                <div class="content-wrapper">
+                    <p>Follow the steps given below to specify the expression value:</p>
+                    <ol>
+                        <li>Click the expression (<img src="{{base_path}}/assets/img/common/enable_expression_icon.png" alt="expression icon" class="inline-icon">) icon in the <b>Value</b> field. This specifies the value type as an <i>expression</i>.</li>
+                        <li>Enter <code>payload.doctor</code> as the expression value.</li>
+                    </ol>
+                    <b>Note</b>:
+                    This is the synapse expression that will extract the doctor's details from the request payload.
+                </div>
+            </td>
         </tr>
-        <tr>
-        <td>Value (Expression)</td>
-        <td><code>json-eval(&#36;.doctor)</code></td>
-        <td>
-        <ol>
-        <li>Click the <strong>Ex</strong> button before the <b>Value</b> field. This specifies the value type as <i>expression</i>.</li>
-        <li>Enter <code>json-eval($.doctor)</code> as the expression value.</li>
-        </ol>
-        <b>Note</b>:
-        This is the JSONPath expression that will extract the doctor details from the request payload.
-        </td>
-        </tr>
-        <tr>
-        <td>Description</td>
-        <td>
-        Get Doctor Details
-        </td>
-        <td>The description of the property.</td>
-        </tr>
-        </table>
+    </table>
 
     - To store `patient` details:
+    <table>
+        <tr>
+            <th>Property</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Name</td>
+            <td>Enter <code>PatientDetails</code>.</td>
+        </tr>
+        <tr>
+            <td>Data Type</td>
+            <td>Select <code>JSON</code>.</td>
+        </tr>
+        <tr>
+            <td>Value</td>
+            <td>
+                <div class="content-wrapper">
+                    <p>Follow the steps given below to specify the expression value:</p>
+                    <ol>
+                        <li>Click the expression (<img src="{{base_path}}/assets/img/common/enable_expression_icon.png" alt="expression icon" class="inline-icon">) icon in the <b>Value</b> field. This specifies the value type as an <i>expression</i>.</li>
+                        <li>Enter <code>payload.patient</code> as the expression value.</li>
+                    </ol>
+                    <b>Note</b>:
+                    This is the synapse expression that will extract the patient details from the request payload.
+                </div>
+            </td>
+        </tr>
+    </table>
 
-        <table>
-        <tr>
-        <th>Property</th>
-        <th>Value</th>
-        <th>Description</th>
-        </tr>
-        <tr>
-        <td>Property Name</td>
-        <td>
-        Enter <code>patient_details</code>
-        </td>
-        <td>
-        The property name that will be used to refer to this property.
-        </td>
-        </tr>
-        <tr>
-        <td>Property Action</td>
-        <td>
-        Select <strong>set</strong>
-        </td>
-        <td>
-        The property action name.
-        </td>
-        </tr>
-        <tr>
-        <td>Property Data Type</td>
-        <td><code>String</code></td>
-        <td>The property data type.</td>
-        </tr>
-        <tr>
-        <td>Value (Expression)</td>
-        <td><code>json-eval(&#36;.patient)</code></td>
-        <td>
-        <ol>
-        <li>Click the <strong>Ex</strong> button before the <b>Value</b> field. This specifies the value type as <i>expression</i>.</li>
-        <li>Enter <code>json-eval($.patient)</code> as the expression value.</li>
-        </ol>
-        <b>Note</b>:
-        This is the JSONPath expression that will extract the patient details from the request payload.
-        </td>
-        </tr>
-        <tr>
-        <td>Description</td>
-        <td>
-        Get Patient Details
-        </td>
-        <td>The description of the property.</td>
-        </tr>
-        </table>  
+17. Click on the **+** icon after the **Variable** mediator and select the **HTTP GET** operation from the **Mediator Palette**.
 
-11. Add a **Call** mediator from the **Mediators** palette. In the sequence palette specify the endpoint as `ChannelingFeeEP`. Click **Submit**.
+    !!! Tip
+        You can search for `get` in the **Mediator Palette** to quickly find the HTTP GET operation.
 
-    !!! Note
-        The following response that is received from ChannelingFeeEP:
+    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add_http_post.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add_http_get.png" alt="Add HTTP GET" width="80%"></a>
+
+18. In the pane that appears, specify the following values.
+
+    <table>
+        <tr>
+            <th>Property</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Connection</td>
+            <td>Select <code>CommonServiceConn</code>.</td>
+        </tr>
+        <tr>
+            <td>Relative Path</td>
+            <td><code>/\${vars.hospital_id}/categories/appointments/\${vars.AppointmentId}/fee</code></td>
+        </tr>
+    </table>
+
+    !!! Info
+        A response similar to the following will be returned from the Channeling service.
         ```json
         {
             "patientName": " John Doe ",
             "doctorName": "thomas collins",
             "actualFee": "7000.0"
         }
-        ```  
-
-12. Add a **Property** mediator adjoining the **Call** mediator box to retrieve and store the value sent as `actualFee`. 
-
-13. Access the **Property** tab of the mediator and specify the following details:
-  <table>
-  <tr>
-  <th>Property</th>
-  <th>Value</th>
-  <th>Description</th>
-  </tr>
-  <tr>
-  <td>Property Name</td>
-  <td><code>actual_fee</code></td>
-  <td>This value is used when invoking the SettlePaymentEP. The property name that will be used to refer to this property.</td>
-  </tr>
-  <tr>
-  <td>Property Action</td>
-  <td><code>set</code></td>
-  <td>The property action name.</td>
-  </tr>
-  <tr>
-  <td>Property Data Type</td>
-  <td><code>String</code></td>
-  <td>The property data type.</td>
-  </tr>
-  <tr>
-  <td>Value (Expression)</td>
-  <td>`json-eval($.actualFee)`</td>
-  <td>
-  <ol>
-  <li>Click the <strong>Ex</strong> button before the <b>Value</b> field. This specifies the value type as <i>expression</i>.</li>
-  <li>Enter `json-eval($.actualFee)` as the expression value.</li>
-  </ol>
-  </td>
-  </tr>
-  <tr>
-  <td>Description</td>
-  <td>Get Actual Fee</td>
-  <td>The description of the property.</td>
-  </tr>
-  </table>
-
-14.  Let's use the **PayloadFactory** mediator to construct the following message payload for the request sent to SettlePaymentEP.
+        ```
+    
+    To invoke the payment service in the next steps, you first need to construct the following request payload. We will use the <a target="_blank" href="{{base_path}}/reference/mediators/payloadfactory-mediator/">Payload mediator</a> to create it.
 
     ```json
     {
@@ -604,7 +440,7 @@ You can now start updating the API resource with the mediation flow.
         },
         "patient": {
             "name": "John Doe",
-            "Dob": "1990-03-19",
+            "dob": "1990-03-19",
             "ssn": "234-23-525",
             "address": "California",
             "phone": "8770586755",
@@ -616,90 +452,99 @@ You can now start updating the API resource with the mediation flow.
     }
     ```
 
-15.  Add a **PayloadFactory** mediator next to the **Property** mediator to construct the above message payload.
+19. Click on the **+** icon after the **HTTP GET** operation and select the **Payload** mediator to construct the above request payload.
 
     <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add-payload-mediator.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/add-payload-mediator.png" alt="add payload mediator" width="80%"></a>
 
-16.  With the **PayloadFactory** mediator selected, access the properties tab of the mediator and specify the following details:
-  <table>
-  <tr>
-  <th>Property</th>
-  <th>Description</th>
-  </tr>
-  <tr>
-  <td>Payload Format</td>
-  <td>Select <code>Inline</code></td>
-  </tr>
-  <tr>
-  <td>Media Type</td>
-  <td>Select <code>json</code></td>
-  </tr>
-  <tr>
-  <td>Payload</td>
-  <td>
-  ```json 
-  {"appointmentNumber":$1, "doctor":$2, "patient":$3, "fee":$4, "confirmed":"false", "card_number":"$5"}
-  ```
-  This is the message payload to send with the request to SettlePaymentEP. In this payload, $1, $2, $3, $4, and $5 indicate variables.
-  </td>
-  </tr>
-  </table>
+20. In the **Add Payload Mediator** pane that appears, enter the following template in the **Payload** box and ensure that the **Content Type** is set to **JSON**.
 
-17.  To add the arguments for the **PayloadFactory** mediator:
-  1. Click the **Add Parameter** in the **Args** field to open the **PayloadFactoryArgument** dialog.
-  2. Enter the following information in the **PayloadFactoryArgument** dialog box. This provides the argument that defines the actual value of the first variable (used in the format definition given in the previous step).
+    ```json 
+    {
+        "appointmentNumber":${vars.AppointmentId},
+        "doctor":${vars.DoctorDetails},
+        "patient":${vars.PatientDetails},
+        "fee":${payload.actualFee},
+        "confirmed":"false",
+        "card_number":"${vars.CardNumber}"
+    }
+    ```   
+
+    !!! Note
+        - Values inside <code>${...}</code> are inline expressions dynamically fetching data during the flow.
+        - <code>vars</code> refers to values stored using Variable mediators, while <code>payload</code> refers to the current message body.
+        - This constructed payload will be sent to the Payments service for payment processing.
+
     <table>
-    <tr>
-    <th>Property</th>
-    <th>Description</th>
-    </tr>
-    <tr>
-    <td>Argument Value</td>
-    <td>
-    <div class="content-wrapper">
-    <p>Follow the steps given below to specify the expression:</p>
-    <ol>
-    <li>Click the <strong>Ex</strong> button before the <b>Value</b> field. This specifies the value type as <i>expression</i>.</li>
-    </li>
-    <li>
-    Enter `$ctx:uri.var.appointment_id`.
-    Note that the `$ctx` method is similar to using the <code>get-property</code> method. This method checks in the message context.
-    </li>
-    </ol>
-    </div>
-    </td>
-    </tr>
-    <tr>
-    <td>
-    Evaluator
-    </td>
-    <td>
-    Select <code>xml</code>.</br></br>
-    This indicates that the expression is provided in XML.
-    </td>
-    </tr>
+        <thead>
+            <tr>
+            <th>Field</th>
+            <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <td><strong>appointmentNumber</strong></td>
+            <td>Retrieved from the variable <code>AppointmentId</code>, which stores the appointment ID extracted earlier.</td>
+            </tr>
+            <tr>
+            <td><strong>doctor</strong></td>
+            <td>Retrieved from the variable <code>DoctorDetails</code>, which contains the doctor's details.</td>
+            </tr>
+            <tr>
+            <td><strong>patient</strong></td>
+            <td>Retrieved from the variable <code>PatientDetails</code>, which contains the patient's details.</td>
+            </tr>
+            <tr>
+            <td><strong>fee</strong></td>
+            <td>Extracted from the <code>actualFee</code> field of the current message payload (the response payload of the HTTP GET call).</td>
+            </tr>
+            <tr>
+            <td><strong>confirmed</strong></td>
+            <td>Hardcoded to <code>false</code> to indicate that the appointment is not yet confirmed.</td>
+            </tr>
+            <tr>
+            <td><strong>card_number</strong></td>
+            <td>Retrieved from the variable <code>CardNumber</code>, containing the customer's card number.</td>
+            </tr>
+        </tbody>
     </table>
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/payload-parameter.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/payload-parameter.png" alt="payload mediator parameters" width="30%"></a>
+21. Click **Add** to insert the **Payload** mediator into the integration flow.
 
-18.  Click **Save**.
+    !!! Tip
+        When you use a <a target="_blank" href="{{base_path}}/reference/mediators/payloadfactory-mediator/">Payload mediator</a>, it replaces (overwrites) the current message body with the new payload you define. If you need to keep any previous payload data, make sure to store it in a variable before using the Payload mediator.
 
-19. Similarly, click **Add Parameter** and add more arguments to define the other variables that are used in the message payload format definition. Use the following as the **Value** for each of them:
+22. Click on the **+** icon after the **Payload** mediator and select the **HTTP POST** operation from the **Mediator Palette**.
 
-    -   `$ctx:doctor_details`  
-    -   `$ctx:patient_details`  
-    -   `$ctx:actual_fee`  
-    -   `$ctx:card_number` 
- 
-20. Click **Submit**.
+23. In the **Add POST** pane, enter the following details and click **Submit** to add the HTTP POST operation.
 
-21. Add a **Call** mediator from the **Mediators** palette.In the sequence palette specify the endpoint as `SettlePaymentEP`. Click **Submit**.
+    <table>
+        <tr>
+            <th>Property</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Connection</td>
+            <td>Select <code>CommonServiceConn</code>.</td>
+        </tr>
+        <tr>
+            <td>Relative Path</td>
+            <td><code>/healthcare/payments</code></td>
+        </tr>
+    </table>
 
-22. Add a **Respond** mediator to send the response to the client. 
+    !!! Note
+        We will leave the rest of the configurations as defaults: **Content Type** set to **JSON**, **Request Body** as `${payload}`, and **Overwrite Message Body** checked.
+
+24. Click on the **+** icon after the **HTTP POST** operation and select the **Respond** mediator from the **Mediator Palette** to send the response back to the client.
 
 ### Step 3: Build and run the artifacts
 
-{!includes/build-and-run-artifacts.md!}
+Now that you have developed an integration using the Micro Integrator for the Visual Studio Code plugin, it's time to deploy the integration to the Micro Integrator server runtime.
+
+Click the **Build and Run** icon located in the top right corner of VS Code.
+
+<a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/build_and_run_btn.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/build_and_run_btn.png" alt="Build and Run" width="80%"></a>
 
 ### Step 4: Test the use case
 
@@ -708,7 +553,7 @@ Let's test the use case by sending a simple client request that invokes the serv
 #### Start the back-end service
 
 1. Download the JAR file of the back-end service from [here](https://github.com/wso2-docs/WSO2_EI/blob/master/Back-End-Service/Hospital-Service-JDK11-2.0.0.jar).
-2. Open a terminal, navigate to the location where you saved the back-end service.
+2. Open a terminal, and navigate to the location where you saved the back-end service.
 3. Execute the following command to start the service:
 
     ```bash
@@ -717,109 +562,127 @@ Let's test the use case by sending a simple client request that invokes the serv
 
 #### Send the client request
 
-Let's send a request to the API resource. You can use Postman or any other **HTTP Client**:
+Now, let's test the integration service. For that, you can use the inbuilt try-it functionality in the MI for VS Code extension.
 
-1. Open the Postman application. If you do not have the application, download it from here : [Postman](https://www.postman.com/downloads/)
+When you run the integration artifact as in [Step 3](#step-3-build-and-run-the-artifacts), the **Runtime Services** interface is opened up. You can see all the available services.
 
-2. Add the request information as given below and click the <b>Send</b> button.
-    
-    <table>
-        <tr>
-            <th>Method</th>
-            <td>
-               <code>POST</code> 
-            </td>
-        </tr>
-        <tr>
-            <th>Headers</th>
-            <td>
-              <code>Content-Type=application/json</code>
-            </td>
-        </tr>
-        <tr>
-            <th>URL</th>
-            <td><code>http://localhost:8290/healthcare/categories/surgery/reserve</code></br></br>
-              <ul>
-                <li>
-                  The URI-Template format that is used in this URL was defined when creating the API resource:
-          <code>http://<host>:<port>/categories/{category}/reserve</code>.
-                </li>
-              </ul>
-            </td>
-        </tr>
-        <tr>
-            <th>Body</th>
-            <td>
-            <div>
-              <code>
-                {
-                  "patient": {
-                  "name": "John Doe",
-                  "dob": "1940-03-19",
-                  "ssn": "234-23-525",
-                  "address": "California",
-                  "phone": "8770586755",
-                  "email": "johndoe@gmail.com",
-                  "cardNo": "7844481124110331"
-                  },
-                  "doctor": "thomas collins",
-                  "hospital_id": "grandoaks",
-                  "hospital": "grand oak community hospital",
-                  "appointment_date": "2025-04-02"
-                }
-              </code>
-            </div></br>
+Select the `HealthcareAPI` you have developed and test the resource using the following category and payload.
+
+<table>
+    <tr>
+        <th>Category</th>
+        <td>
+            <code>surgery</code> 
+        </td>
+    </tr>
+    <tr>
+        <th>Payload</th>
+        <td>
+        <div>
+            <pre><code>
+            {
+                "patient":{
+                    "name":"John Doe",
+                    "dob":"1940-03-19",
+                    "ssn":"234-23-525",
+                    "address":"California",
+                    "phone":"8770586755",
+                    "email":"johndoe@gmail.com"
+                },
+                "doctor":"thomas collins",
+                "hospital_id":"grandoaks",
+                "hospital":"grand oak community hospital",
+                "cardNo":"7844481124110331",
+                "appointment_date":"2025-04-02"
+            }
+            </code></pre>
+        </div></br>
+        This JSON payload contains details of the appointment reservation, which includes patient details, doctor, hospital, and date of appointment.
+    </tr>
+</table>
+
+<a href="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/try_out.png"><img src="{{base_path}}/assets/img/learn/tutorials/exposing-several-services/try_out.png" alt="Try Out" width="80%"></a>
+
+Optionally, you can use [Postman](https://www.postman.com/downloads/) or [cURL](https://curl.haxx.se/) to send the request. You can refer to the following request information.
+
+<table>
+    <tr>
+        <th>Method</th>
+        <td>
+            <code>POST</code> 
+        </td>
+    </tr>
+    <tr>
+        <th>Headers</th>
+        <td>
+            <code>Content-Type=application/json</code>
+        </td>
+    </tr>
+    <tr>
+        <th>URL</th>
+        <td><code>http://localhost:8290/healthcare/categories/surgery/reserve</code></br></br>
             <ul>
-              <li>
-                This JSON payload contains details of the appointment reservation, which includes patient details, doctor, hospital, and date of appointment.
-              </li>
+            <li>
+                The URI-Template format that is used in this URL was defined when creating the API resource:
+        <code>http://host:port/healthcare/categories/{category}/reserve</code>
+            </li>
             </ul>
-        </tr>
-     </table>
-     
-If you want to send the client request from your terminal:
-
-1. Install and set up [cURL](https://curl.haxx.se/) as your REST client.
-2. Create a JSON file named `request.json` with the following request payload.
-
-    ```json
-    {
-      "patient": {
-      "name": "John Doe",
-      "dob": "1940-03-19",
-      "ssn": "234-23-525",
-      "address": "California",
-      "phone": "8770586755",
-      "email": "johndoe@gmail.com",
-      "cardNo": "7844481124110331"
-      },
-      "doctor": "thomas collins",
-      "hospital_id": "grandoaks",
-      "hospital": "grand oak community hospital",
-      "appointment_date": "2025-04-02"
-    }
-    ```
-3. Open a terminal and navigate to the directory where you have saved the `request.json` file.
-
-4. Execute the following command.
-
-    ```bash
-    curl -v -X POST --data @request.json  http://localhost:8290/healthcare/categories/surgery/reserve  --header "Content-Type:application/json"
-    ```
+        </td>
+    </tr>
+    <tr>
+        <th>Body</th>
+        <td>
+        <div>
+            <code>
+            {
+                "patient": {
+                "name": "John Doe",
+                "dob": "1940-03-19",
+                "ssn": "234-23-525",
+                "address": "California",
+                "phone": "8770586755",
+                "email": "johndoe@gmail.com"
+            },
+                "doctor": "thomas collins",
+                "hospital_id": "grandoaks",
+                "hospital": "grand oak community hospital",
+                "cardNo": "7844481124110331",
+                "appointment_date": "2025-04-02"
+            }
+            </code>
+        </div>
+        </td>
+    </tr>
+</table>
 
 #### Analyze the response
 
-You will see the response received to your <b>HTTP Client</b>:
+You will see the following response received to your <b>HTTP Client</b>:
 
 ```json
 {
-"patient":"John Doe",
-"actualFee":7000.0,
-"discount":20,
-"discounted":5600.0,
-"paymentID":"480fead2-e592-4791-941a-690ad1363802",
-"status":"Settled"
+    "patient":"John Doe",
+    "actualFee":7000.0,
+    "discount":20,
+    "discounted":5600.0,
+    "paymentID":"480fead2-e592-4791-941a-690ad1363802",
+    "status":"Settled"
 }
 ```
 
-You have now explored how the Micro Integrator can perform service chaining using the **Call** mediator and transform message payloads from one format to another using the **PayloadFactory** mediator.
+You have now learned how the Micro Integrator can perform service chaining using the <a target="_blank" href="{{base_path}}/reference/connectors/http-connector/http-connector-overview/">HTTP connector</a> and transform message payloads between different formats using the <a target="_blank" href="{{base_path}}/reference/mediators/payloadfactory-mediator/">Payload mediator</a>.
+
+{% raw %}
+<style>
+.language-bash {
+    color: var(--md-feedback-button-color) !important;
+}
+.language-bash .hljs-string {
+    color: var(--md-feedback-button-color) !important;
+}
+.language-bash .hljs-variable {
+    font-weight: 600;
+    color: rgb(45, 116, 215) !important;
+}
+</style>
+{% endraw %}

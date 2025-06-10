@@ -1,60 +1,14 @@
 # ForEach Mediator
 
-The ForEach mediator requires an XPath/JSONPath expression and a sequence (inline or referred). It splits the message into a number of different messages
-derived from the original message by finding matching elements for the
-XPath/JSONPath expression specified. Based on the matching elements, new messages
-are created for each iteration and processed sequentially. The
-processing is carried out based on a specified sequence. The behaviour
-of ForEach mediator is similar to a generic loop. After mediation, the
-sub-messages are merged back to their original parent element in the
-original message sequentially.
-
-The ForEach mediator creates the following properties during mediation.
-
-| Property                   | Description                                                                                           |
-|----------------------------|-------------------------------------------------------------------------------------------------------|
-| FOREACH_ORIGINAL_MESSAGE | This contains the original envelop of the messages split by the ForEach mediator.                     |
-| FOREACH_COUNTER           | This contains the count of the messages processed. The message count increases during each iteration. |
-
-!!! Note
-    [Iterate Mediator]({{base_path}}/reference/mediators/iterate-mediator) is quite similar to the ForEach
-    mediator. You can use complex XPath expressions to conditionally select
-    elements to iterate over in both mediators. Following are the main
-    difference between ForEach and Iterate mediators:
-    
-    -   Use the ForEach mediator only for message transformations. If you
-        need to make back-end calls from each iteration, then use the
-        iterate mediator.
-    -   ForEach supports modifying the original payload. You can use Iterate
-        for situations where you send the split messages to a target and
-        collect them by an Aggregate in a different flow
-    -   You need to always accompany an Iterate with an Aggregate mediator.
-        ForEach loops over the sub-messages and merges them back to the same
-        parent element of the message.
-    -   In Iterate you need to send the split messages to an endpoint to
-        continue the message flow. However, ForEach does not allow using
-        [Call]({{base_path}}/reference/mediators/call-mediator), [Send]({{base_path}}/reference/mediators/send-mediator) and
-        [Callout]({{base_path}}/reference/mediators/callout-mediator) mediators in the sequence.
-    -   ForEach does not split the message flow, unlike Iterate Mediator. It
-        guarantees to execute in the same thread until all iterations are
-        complete.
-
-When you use ForEach mediator, you can only loop through segments of the
-message and do changes to a particular segment. For example, you can
-change the payload using payload factory mediator. But you cannot send
-the split message out to a service. Once you exit from the ForEach loop,
-it automatically aggregates the split segments. This replaces the
-ForEach function of the complex XSLT mediators using a ForEach mediator
-and a Payload Factory mediator. However, to implement the
-split-aggregate pattern, you still need to use Iterate mediator.
+The ForEach Mediator processes a collection, such as a JSON array or XML list derived from the message body or a defined variable, by splitting it into multiple messages, each corresponding to an item in the collection. The message in each iteration is flowing through the specified [mediation sequence]({{base_path}}/reference/mediation-sequences). After flowing through the mediation sequence, the sub-messages in each iteration are merged back to the corresponding original parent collection in the original message body or variable.
 
 ## Syntax
 
 ```
-<foreach expression="xpath|jsonpath" [sequence="sequence_ref"] [id="foreach_id"] >
+<foreach collection="expression" parallel-execution=(true | false) continue-without-aggregation=(true | false) update-original=(true | false) target-variable=(string) result-content-type="JSON | XML" result-enclosing-element=(string) counter-variable=(string) >
     <sequence>
-      (mediator)+
-    </sequence>?
+        (mediator)+
+    </sequence>+
 </foreach>
 ```
 
@@ -62,59 +16,216 @@ split-aggregate pattern, you still need to use Iterate mediator.
 
 The parameters available to configure the ForEach mediator are as follows.
 
+### General configurations
+
 <table>
-<thead>
-<tr class="header">
-<th>Parameter Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>ForEach ID</strong></td>
-<td>If a value is entered for this parameter, it will be used as the prefix for the <code>             FOREACH_ORIGINAL_MESSAGE            </code> and <code>             FOREACH_COUNTER            </code> properties created during mediation. This is an optional parameter. However, it is recommended to define a ForEach ID in nested ForEach scenarios to avoid the properties mentioned from being overwritten.</td>
-</tr>
-<tr class="even">
-<td><strong>Expression</strong></td>
-<td><div class="content-wrapper">
-<p>The XPath/JSONPath expression with which different messages are derived by splitting the parent message. This expression should have matching elements based on which the splitting is carried out.</p>
-<p>You can click <strong>NameSpaces</strong> to add namespaces when you are providing an expression. Then the <strong>Namespace Editor</strong> panel would appear where you can provide any number of namespace prefixes and URLs used in the XPath expression.</p>
-</div></td>
-</tr>
-<tr class="odd">
-<td><strong>Sequence</strong></td>
-<td><p>The mediation sequence that should be applied to the messages derived from the parent message. ForEach mediator is used only for transformations, thereby, you should not include <a href="{{base_path}}/reference/mediators/call-mediator">Call</a> , <a href="{{base_path}}/reference/mediators/send-mediator">Send</a> and <a href="{{base_path}}/reference/mediators/callout-mediator">Callout</a> mediators, which are used to invoke endpoints, in t his sequence.</p>
-<p>You can select one of the following options.</p>
-<ul>
-<li><strong>Anonymous</strong>: This allows you to define an anonymous sequence to be applied to the split messages by adding the required mediators as children of the ForEach mediator in the mediator tree.</li>
-<li><strong>Pick from Registry</strong>: This allows you to pick an existing mediation sequence that is saved in the Registry. Click either <strong>Configuration Registry</strong> or <strong>Governance Registry</strong> as relevant to select the required mediation sequence from the Resource Tree.</li>
-</ul></td>
-</tr>
-</tbody>
+   <thead>
+      <tr class="header">
+         <th>Parameter Name</th>
+         <th>Description</th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr class="odd">
+         <td>
+            <strong>Collection to Iterate</strong>
+         </td>
+         <td>
+            This parameter specifies the collection to be processed by the ForEach mediator. You need to provide an expression that points to a collection within the message body or a variable. The collection can be extracted as follows depending on the content type.
+            <ul>
+               <li>
+                  <strong>JSON</strong>
+                  : <code>${payload.items}</code>
+               </li>
+               <li>
+                  <strong>XML</strong>
+                  : <code>${xpath('//data/list')}</code>
+               </li>
+               <li>
+                  <strong>Variable</strong>
+                  : <code>${var.myCollection}</code>
+               </li>
+            </ul>
+         </td>
+      </tr>
+      <tr class="even">
+         <td>
+            <strong>Execute Parallel</strong>
+         </td>
+         <td>
+            Specifies whether the messages should be processed in parallel.
+            <ul>
+               <li>
+                  <strong>True</strong>
+                  (default): Executes the messages in parallel.
+               </li>
+               <li>
+                  <strong>False</strong>
+                  : Executes the messages sequentially.
+               </li>
+            </ul>
+         </td>
+      </tr>
+      <tr class="odd">
+         <td>
+            <strong>Continue without aggregation</strong>
+         </td>
+         <td>
+            Specifies whether the parent flow should continue without waiting for the aggregation.
+            <ul>
+               <li>
+                  <strong>True</strong>
+                  : Continue the parent flow without waiting for the aggregation.
+               </li>
+               <li>
+                  <strong>False</strong>
+                  (default): Wait till aggregation completes and continue the flow.
+               </li>
+            </ul>
+         </td>
+      </tr>
+   </tbody>
+</table>
+
+### Output configurations
+
+<table>
+   <thead>
+      <tr class="header">
+         <th>Parameter Name</th>
+         <th>Description</th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr class="odd">
+         <td>
+            <strong>Update Original Collection</strong>
+         </td>
+         <td>If enabled, the original list will be updated with the content. The content type should match the original collection type.</td>
+      </tr>
+      <tr class="even">
+         <td>
+            <strong>Variable Name</strong>
+         </td>
+         <td>
+            The name of the variable where the new content will be saved. This parameter is required if <strong>Update Original Collection</strong> is disabled.
+         </td>
+      </tr>
+      <tr class="odd">
+         <td>
+            <strong>Variable Type</strong>
+         </td>
+         <td>
+            The type of the variable where the new content will be saved. Supported values:
+            <ul>
+               <li>
+                  <strong>JSON</strong>
+                  (default)
+               </li>
+               <li>
+                  <strong>XML</strong>
+               </li>
+            </ul>
+            This parameter is required if <strong>Update Original Collection</strong> is disabled.
+         </td>
+      </tr>
+      <tr class="odd">
+         <td><strong>Result Enclosing Element Name</strong></td>
+         <td>Specifies the name of the root element wrapping the aggregation result. Applicable only when <strong>Variable Type</strong> is XML.</td>
+      </tr>
+   </tbody>
+</table>
+
+### Advanced configurations
+
+<table>
+   <thead>
+      <tr class="header">
+         <th>Parameter Name</th>
+         <th>Description</th>
+      </tr>
+   </thead>
+   <tbody>
+      <tr class="odd">
+         <td>
+            <strong>Counter Variable Name</strong>
+         </td>
+         <td>
+            You can access the current iteration number using this variable within the sequence used in the ForEach mediator. This option is available only when
+            <strong>Parallel Execution</strong> is disabled.
+         </td>
+      </tr>
+   </tbody>
 </table>
 
 ## Examples
 
-In this configuration, the `         "//m0:getQuote/m0:request"        `
-XPath and `         "json-eval($.getQuote.request)"        ` JSONPath expression evaluates the split messages to be derived from the
-parent message. Then the split messages pass through a sequence which
-includes a [Log mediator]({{base_path}}/reference/mediators/log-mediator) with the log level set to
-`         full        ` .
+### Example 1 - Iterating over an XML list derived from the message body and updating the original collection
 
-=== "Using a XPath expression"
-    ``` java 
-    <foreach id="foreach_1" expression="//m0:getQuote/m0:request" xmlns:m0="http://services.samples">
-            <sequence>
-                 <log level="full"/>
-            </sequence>
-    </foreach>
-    ```
-=== "Using a JSONPath expression"    
-    ``` java 
-    <foreach id="foreach_1" expression="json-eval($.getQuote.request)">
-            <sequence>
-                 <log level="full"/>
-            </sequence>
-    </foreach>
-    ```
+```xml
+<foreach collection="${xpath('//data/list')}" parallel-execution="true" update-original="true" continue-without-aggregation="false">
+    <sequence>
+        <payloadFactory media-type="xml">
+            <format>
+                <person xmlns="">
+                    <surname>${xpath('//list/name/text()')}</surname>
+                    <age>10</age>
+                </person>
+            </format>
+        </payloadFactory>
+        <call>
+            <endpoint>
+                <http method="post" uri-template="http://localhost:5454/api/transform" />
+            </endpoint>
+        </call>
+    </sequence>
+</foreach>
+```
 
+### Example 2 - Iterating over a JSON array derived from the message body and setting the new content to a variable
+
+```xml
+<foreach collection="${payload.data.list}" parallel-execution="true" update-original="false" target-variable="processedList" result-content-type="JSON" continue-without-aggregation="false">
+    <sequence>
+        <log category="INFO">
+            <message>Processing message : ${payload}</message>
+        </log>
+        <payloadFactory media-type="json">
+            <format><![CDATA[{
+                "_name": ${payload.name},
+                "age": 5
+                }]]>
+                </format>
+        </payloadFactory>
+        <call>
+            <endpoint>
+                <http method="post" uri-template="http://localhost:5454/api/transform" />
+            </endpoint>
+        </call>
+    </sequence>
+</foreach>
+```
+
+### Example 2 - Iterating over a JSON array derived from a variable
+
+```xml
+<foreach collection="${var.list}" parallel-execution="true" update-original="true" continue-without-aggregation="false">
+    <sequence>
+        <log category="INFO">
+            <message>Processing message : ${payload}</message>
+        </log>
+        <payloadFactory media-type="json">
+            <format><![CDATA[{
+                "_name": ${payload.name},
+                "age": 5
+                }]]>
+                </format>
+        </payloadFactory>
+        <call>
+            <endpoint>
+                <http method="post" uri-template="http://localhost:5454/api/transform" />
+            </endpoint>
+        </call>
+    </sequence>
+</foreach>
+```

@@ -7,6 +7,9 @@ For example, the endpoint for the simple stock quote sample is `http://localhost
 
 Endpoints are independent of transports, which allows you to use the same endpoint with multiple transports. When you configure a message mediation sequence or a proxy service to handle the incoming message, you can specify which transport to use and the endpoint to which the message is sent.
 
+!!! Note  
+    Starting from WSO2 MI 4.4.0, a new [**HTTP Connector**]({{base_path}}/reference/connectors/http-connector/http-connector-overview/) is available for invoking HTTP backends. While **HTTP endpoints** can still be used, the HTTP connector provides a more flexible and feature-rich approach for handling HTTP requests. It is **recommended** to use the [HTTP Connector]({{base_path}}/reference/connectors/http-connector/http-connector-overview/) for new implementations.
+
 ## Classification of Endpoints
 
 ### Named Endpoints
@@ -32,7 +35,7 @@ Indirect endpoints are useful when the actual endpoints are stored in the regist
 
 ### Resolving Endpoints
 
-The resolving endpoint refers to an actual endpoint using a dynamic key (which is an XPath expression). The [XPath expression]({{base_path}}/reference/synapse-properties/expressions/#xpath-expressions) dynamically calls another endpoint at runtime. The XPath is evaluated against the current message and the key-expression is calculated at runtime. The resolving endpoint then fetches the actual endpoint using the calculated key and delegates the message sending to the actual endpoint. Shown below is an example of a resolving endpoint.
+The resolving endpoint refers to an actual endpoint using a dynamic key (which is an XPath expression). The [XPath expression]({{base_path}}/reference/synapse-properties/xpath-expressions) dynamically calls another endpoint at runtime. The XPath is evaluated against the current message and the key-expression is calculated at runtime. The resolving endpoint then fetches the actual endpoint using the calculated key and delegates the message sending to the actual endpoint. Shown below is an example of a resolving endpoint.
 
 ```xml
 <send>
@@ -542,7 +545,7 @@ The following is an HTTP endpoint configured with basic authentication.
 The following properties <b>only</b> apply to HTTP endpoint. 
 
 !!! Note
-      1. You can also use environment variables for these parameters. For more information, see [Injecting Parameters]({{base_path}}/develop/injecting-parameters).
+      1. You can also use environment variables for these parameters. For more information, see [Externalized Configuration]({{base_path}}/develop/externalized-configuration/).
       2. You can use dynamic values for OAuth configurations such as XPATH, JSON expressions or vault-lookup. For more information, see [Define dynamic expressions]({{base_path}}/reference/synapse-properties/endpoint-properties/#define-dynamic-expressions).
       3. You can send additional parameters as well in the OAuth request body. For more information, see [Send additional parameters in the OAuth request body]({{base_path}}/reference/synapse-properties/endpoint-properties/#send-additional-parameters-in-the-oauth-request-body).
 

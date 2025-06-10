@@ -8,9 +8,9 @@ Each connector provides a set of operations you call from your proxy services, s
 
 This documentation provides an example of how to use each connector and a reference of its operations and properties.
 
-## Types of connectors
+## Categories of connectors
 
-There are three types of connectors available.
+The available connectors can be classified into following categories.
 
 **Cloud Connectors**: These connectors enable you to integrate with the APIs of external cloud systems (SaaS Applications) such as Salesforce, ServiceNow, Gmail, Amazon S3, etc.
 
@@ -86,7 +86,7 @@ You can search for the desired connector in the MI VS Code extension and select 
 
 ### Operations
 
-An operation of a particular connector represents a function that can be executed using that connector. The input parameters of an operation can be hard-coded or fed into the connector programmatically using Properties. You can use any property (custom or internal) set to the message flow before the connector operation is used. Sometimes, the payload in the message context is considered by the connector for its operation as the payload to be sent over the connector. You can manipulate this payload using mediators like enrich, payloadfactory, etc. After the connector operation is used in the message flow, the response received by invoking that operation will be available in the message context for the next mediator to be used. 
+An operation of a particular connector represents a function that can be executed using that connector. The input parameters of an operation can be hard-coded or fed into the connector programmatically using Properties. You can use any property (custom or internal) set to the message flow before the connector operation is used. Sometimes, the payload in the message context is considered by the connector for its operation as the payload to be sent over the connector. You can manipulate this payload using mediators like enrich, payload, etc. After the connector operation is used in the message flow, the response received by invoking that operation will be available in the message context for the next mediator to be used. 
 
 ### Input sources
 
@@ -121,12 +121,7 @@ We have to be honest; we would really like to encourage developers who want to s
 
 ### Report an issue
 
-You can report issues for any connector under the [Micro Integrator repository](https://github.com/wso2/micro-integrator/issues/new). Once you have reported the issue, do the following:
-
-* Add the label `Connector`. 
-* Add to the project `WSO2 Connectors`.
-
-For an example, please refer to [this issue](https://github.com/wso2/micro-integrator/issues/1358). 
+You can report issues for any connector under the [Micro Integrator repository](https://github.com/wso2/micro-integrator/issues/new). 
 
 ### Contribute to the connector project
 

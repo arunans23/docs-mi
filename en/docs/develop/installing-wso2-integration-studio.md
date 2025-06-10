@@ -2,6 +2,9 @@
 
 WSO2 Integration Studio provides a comprehensive development experience for building integration solutions.
 
+!!! warning
+    WSO2 Integration Studio is deprecated. It is recommended to use the [Micro Integrator extension for VS Code]({{base_path}}/develop/mi-for-vscode/mi-for-vscode-overview/) instead.
+
 ### Installation prerequisites
 
 <table>
@@ -66,6 +69,4 @@ MacOS security settings as described below.
 
 ## What's next?
 
--   Take a [quick tour]({{base_path}}/develop/wso2-integration-studio) of the WSO2 Integration Studio interface.
--   [Build a simple integration use case]({{base_path}}/develop/integration-development-kickstart) to get familiar with the development workflow. 
--   Build [integration use cases]({{base_path}}/learn/learn-overview/#integration-use-cases) with WSO2 Integration Studio.
+Learn more about [integration use cases]({{base_path}}/learn/learn-overview/#integration-use-cases).

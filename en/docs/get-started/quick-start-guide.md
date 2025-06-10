@@ -1,341 +1,212 @@
+---
+search:
+  exclude: true
+---
+
 # Quick Start Guide
 
-Let's get started with WSO2 Micro Integrator by running a simple integration use case in your local environment. 
+Welcome to the WSO2 Micro Integrator Quick Start Guide, your step-by-step tutorial for getting started with WSO2 Micro Integrator (MI). WSO2 MI enables you to build, deploy, and manage integration solutions with ease, providing flexibility and scalability to connect applications, services, and systems.
+
+In this guide, you'll learn the basics of setting up and using WSO2 MI to create and deploy a basic integration flow with minimal hassle.
 
 ## Prerequisites
 
-The following software and configurations are required to proceed with this tutorial:
+You need Visual Studio Code (VS Code) with the <a target="_blank" href="https://marketplace.visualstudio.com/items?itemName=WSO2.micro-integrator">Micro Integrator for VS Code</a> extension installed.
 
-- **Visual Studio Code (VS Code):** with the [Micro Integrator for VS Code](https://marketplace.visualstudio.com/items?itemName=WSO2.micro-integrator) extension installed.
-- **Java Development Kit (JDK):** Version 11 or 17 is required. Ensure the JDK is properly configured in your system's PATH environment variable.
+!!! Info
+    See the [Install Micro Integrator for VS Code]({{base_path}}/develop/mi-for-vscode/install-wso2-mi-for-vscode) documentation to learn how to install Micro Integrator for VS Code.
 
-    !!! Info
-        For more information on setting the `JAVA_HOME` environment variable for different operating systems, see the [Install and Setup]({{base_path}}/install-and-setup/install/installing-mi) documentation.
+Follow the instructions below to create your first integration solution:
 
-- **Apache Maven:** Ensure Apache Maven is installed and its path is correctly set within the system's PATH environment variable.
-- **WSO2 Micro Integrator 4.3.0 Runtime:** Set up WSO2 Micro Integrator 4.3.0 runtime on your machine.
-    1. Download the Micro Integrator 4.3.0 distribution as a ZIP file from [here](https://github.com/wso2/micro-integrator/releases/download/v4.3.0/wso2mi-4.3.0.zip).
-    2. Extract the ZIP file. Hereafter, this extracted folder will be referred to as the `<MI_HOME>` folder.
+## What you'll build
 
-After completing the steps above, follow the instructions below to set up the workspace:
+Let’s try a simple scenario where the client sends a request to a `HelloWorld` API deployed in the WSO2 Micro Integrator and the API calls a backend service and returns its response. The backend service responds a `Hello World!!!` message, and the API deployed in the WSO2 Micro Integrator forwards this response to the client.
+
+<a href="{{base_path}}/assets/img/integrate/quick-start-guide/mi-quick-start-guide.gif"><img src="{{base_path}}/assets/img/integrate/quick-start-guide/mi-quick-start-guide.gif"></a>
+
+You can use the following `HelloWorld` service as the backend service.
+
+<table>
+    <tr>
+        <td>URL</td>
+        <td>
+            <code>https://apis.wso2.com/zvdz/mi-qsg/v1.0</code>
+        </td>
+    </tr>
+    <tr>
+        <td>HTTP Method</td>
+        <td>
+            <code>GET</code> 
+        </td>
+    </tr>
+</table>
+
+## Step 1 - Create a new integration project
+
+To develop the above scenario, let's get started with creating an integration project in the Micro Integrator extension installed VS Code.
 
 1. Launch VS Code with the Micro Integrator extension installed.
 
 2. Click on the Micro Integrator icon on the Activity Bar of the VS Code editor.
 
-    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/mi-vscode-extension.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/mi-vscode-extension.png" alt="Mi VS Code Extension" width="80%"></a>
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/mi-vscode-extension.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/mi-vscode-extension.png" alt="MI VS Code Extension" width="80%"></a>
 
-3. Click on the **Command Palette** on the top of the VS Code.
+3. Click **Create New Project** on **Micro Integrator Project Explorer**. For more options for creating a new integration project, see [Create an Integration Project]({{base_path}}/develop/create-integration-project).
 
-    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/command-palette.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/command-palette.png" alt="Command palette" width="70%"></a>
+4. In the **Project Creation Form**, enter `HelloWorld` as the **Project Name**.
 
-4. Type `>` to show the available commands. Alternatively, you can open the command palette in VS Code by entering `Command`+`Shift`+`P` on macOS and `Ctrl`+`Shift`+`P` on Windows.
+5. Ensure `4.4.0` is selected as the **Micro Integrator runtime version**.
 
-5. Select **MI: Add MI server** from the list of available commands.
+6. Provide a location for the integration project under **Project Directory**.
 
-6. Click **Add MI server** to add a Micro Integrator server.
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/new-project.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/new-project.png" alt="Create New Project" width="80%"></a>
 
-7. Select the folder where `<MI_HOME>` is located. This will be set as the **current server path**.
+7. Click **Create**.
 
-    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/current-server-path.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/current-server-path.png" alt="Current server path" width="50%"></a>
+   Once you click **Create**, the **Add Artifact** pane will be opened.
 
-8. Download the [sample files]({{base_path}}/assets/attachments/quick-start-guide/mi-qsg-home.zip). From this point onwards, let's refer to this directory as `<MI_QSG_HOME>`.
+!!! note
+    You need the following to work with the MI for VS Code extension.
 
-9. Download [curl](https://curl.haxx.se/) or a similar tool that can call an HTTP endpoint.
+    - Java Development Kit (JDK) version 21
+    - WSO2 Micro Integrator (MI) 4.4.0 runtime
 
-## What you'll build
+    If you don't have them installed on your local machine, these will be automatically prompted for downloading and configured by the Micro Integrator for VS Code extension during the project creation step:
 
-This is a simple service orchestration scenario. The scenario is about a basic healthcare system where the Micro Integrator is used to integrate two back-end hospital services to provide information to the client.
+    1. Click **Download Java & MI** to download and set up Java and MI runtime.
 
-Most healthcare centers have a system that is used to make doctor appointments. To check the availability of the doctors for a particular time, users typically need to visit the hospitals or use each and every online system that is dedicated to a particular healthcare center. Here, we are making it easier for patients by orchestrating those isolated systems for each healthcare provider and exposing a single interface to the users.
+        <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/download-java-and-mi.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/download-java-and-mi.png" alt="Download Java and MI" width="80%"></a>
 
-<a href="{{base_path}}/assets/img/integrate/quick-start-guide/mi-quick-start-guide.png"><img src="{{base_path}}/assets/img/integrate/quick-start-guide/mi-quick-start-guide.png"></a>
+        !!! info
+            If a different JDK or WSO2 MI version is installed on your local machine, you'll be prompted to download the required versions. 
 
-!!! Tip
-    You may open the` <MI_QSG_HOME>/HealthcareIntegrationProject` in Visual Studio Code to view the project structure.
+            1. Click **Download** to install the required JDK or/and MI version(s).
+            2. Once the download is complete, configure the Java Home or/and MI Home paths by clicking **Select Java Home** or/and **Select MI Path**, respectively.
 
-In the above scenario, the following takes place:
+            If the required JDK and WSO2 MI versions are already installed, you can directly configure the Java Home and MI Home paths in this step by clicking **Select Java Home** and **Select MI Path**, respectively.
 
-1. The client makes a call to the Healthcare API created using Micro Integrator.
+        Once the process is complete, a window reload will be required, and you will be prompted with the following message:
 
-2. The Healthcare API calls the Pine Valley Hospital back-end service to retrieve the requested information.
+        <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/reload-window.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/reload-window.png" alt="Reload Window" width="80%"></a>
 
-3. The Healthcare API calls the Grand Oak Hospital back-end service to retrieve the requested information.
+    2. Click **Reload Window**.
 
-4. The response is returned to the client with the required information.
+## Step 2 - Create an API
 
-Both Grand Oak Hospital and Pine Valley Hospital have services exposed over the HTTP protocol.
+Now the integration project is ready to add an API. In this scenario, the API calls a backend service and responds to the client. First, let's create an API.
 
-The Pine Valley Hospital service accepts a POST request using the following service endpoint URL.
+1. In the **Add Artifact** interface, under **Create an Integration**, click on **API**. This opens the **API Form**.
 
-```bash
-http://<HOST_NAME>:<PORT>/pineValley/doctors
+2. Enter `HelloWorldAPI` as the API **Name**. The API **Context** field will be automatically populated with the same value.
+
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/new-api.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/new-api.png" alt="Create New API" width="80%"></a>
+
+3. Click **Create**.
+
+Once you create the API, a default resource will be automatically generated. You can see this default resource listed in the **Service Designer** under **Available resources**. You'll use this resource in this tutorial.
+
+## Step 3 - Design the integration
+
+Now it's time to design your API. This is the underlying logic that's executed behind the scenes when an API request is made. In this scenario first, you need to call the backend service. For that, you have to add an [HTTP connection]({{base_path}}/reference/connectors/http-connector/http-connector-overview). Follow the below steps to create an HTTPS connection.
+
+1. Open the **Resource View** of the API resource by clicking the `GET` resource under **Available resources** on **Service Designer**.
+
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/get-resource.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/get-resource.png" alt="Add new connection" width="80%"></a>
+
+2. Once you open the **Resource View**, click on the **+** icon on the canvas to open the palette.
+
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/open-palette.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/open-palette.png" alt="Add new connection" width="80%"></a>
+
+3. Under **Mediators** > **HTTP** select the **GET** operation .
+
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/add-get-operation.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/add-get-operation.png" alt="Add new connection" width="80%"></a>
+
+4. In the **Add Get** pane that appears, click **Add new connection**.
+
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/add-new-connection.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/add-new-connection.png" alt="Add new connection" width="40%"></a>
+
+5. Under **Add New Connection**, select **HTTPS**.
+
+6. Specify the following values:
+
+    | Property            | Value                   |
+    |---------------------|-------------------------|
+    | **Connection Name** | `HelloWorldConn`        |
+    | **Base URL**        | `https://apis.wso2.com` |
+
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/hello-world-connection.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/hello-world-connection.png" alt="Add new connection" width="80%"></a>
+
+7. Click **Add**.
+
+    You'll be directed to the **Add Get** pane again.
+
+8. Enter `/zvdz/mi-qsg/v1.0` as the **Relative Path**.
+
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/add-get.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/add-get.png" alt="Add new connection" width="40%"></a>
+
+9. Click **Submit**.
+
+    Now let's add a [Respond Mediator]({{base_path}}/reference/mediators/respond-mediator) to respond the message to the client.
+
+10. Click on the **+** icon placed just after the HTTPS GET operation to open the palette.
+
+11. Select **Respond** mediator under **Mediators**.
+
+12. Click **Add**.
+
+    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/design-api.gif"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/design-api.gif" alt="Design API" width="80%"></a>
+
+Following is what you'll see in the **Source View** of the VS Code.
+
+!!! info
+    You can view the source view by clicking on the **Show Source** (`</>`) icon located in the top right corner of the VS Code.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/helloworldapi" name="HelloWorldAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/">
+        <inSequence>
+            <http.get configKey="HelloWorldConn">
+                <relativePath>/zvdz/mi-qsg/v1.0</relativePath>
+                <headers>[]</headers>
+                <forceScAccepted>false</forceScAccepted>
+                <disableChunking>false</disableChunking>
+                <forceHttp10>false</forceHttp10>
+                <noKeepAlive>false</noKeepAlive>
+                <responseVariable>http_get_1</responseVariable>
+                <overwriteBody>true</overwriteBody>
+            </http.get>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+        </faultSequence>
+    </resource>
+</api>
 ```
 
-The Grand Oak Hospital service accepts a GET request using the following service endpoint URL.
+## Step 4 - Run the integration artifacts
 
-```bash
-http://<HOST_NAME>:<PORT>/grandOak/doctors/<DOCTOR_TYPE>
-```
-
-The expected payload should be in the following JSON format:
-
-```bash
-{
-        "doctorType": "<DOCTOR_TYPE>"
-}
-```
-
-Let’s implement a simple integration solution that can be used to query the availability of doctors for a particular category from all the available healthcare centers.
-
-## Step 1 - Set up the workspace
-
-The following software and configurations are required to proceed with this tutorial:
-
-1. Navigate to the `<MI_QSG_HOME>` directory. 
-The following project files and executable back-end services are available in the `<MI_QSG_HOME>`.
-
-    - **HealthcareIntegrationProject**: This folder contains the integration artifacts for the healthcare service. This service consists of the following REST API:
-
-        <img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/final-resource-view.png" alt="Final resource view"></a>
-
-        <details>
-                    <summary>HealthcareAPI.xml</summary>
-                ```xml
-                <?xml version="1.0" encoding="UTF-8"?>
-                <api context="/healthcare" name="HealthcareAPI" xmlns="http://ws.apache.org/ns/synapse">
-                <resource methods="GET" uri-template="/doctor/{doctorType}">
-                    <inSequence>
-                    <clone>
-                        <target>
-                        <sequence>
-                            <call>
-                            <endpoint key="GrandOakEndpoint" />
-                            </call>
-                        </sequence>
-                        </target>
-                        <target>
-                        <sequence>
-                            <payloadFactory media-type="json">
-                            <format>{ "doctorType": "$1" } </format>
-                            <args>
-                                <arg evaluator="xml" expression="$ctx:uri.var.doctorType" />
-                            </args>
-                            </payloadFactory>
-                            <call>
-                            <endpoint key="PineValleyEndpoint" />
-                            </call>
-                        </sequence>
-                        </target>
-                    </clone>
-                    <aggregate>
-                        <completeCondition>
-                            <messageCount max="-1" min="-1" />
-                        </completeCondition>
-                        <onComplete expression="json-eval($.doctors.doctor)">
-                            <respond />
-                        </onComplete>
-                    </aggregate>
-                    </inSequence>
-                    <faultSequence />
-                </resource>
-                </api>
-                ```
-        </details>
-
-    - **Backend**: This contains an executable .jar file that contains mock back-end service implementations for the Pine Valley Hospital and Grand Oak Hospital.
-
-## Step 2 - Run the integration artifacts
-
-First, you need to open the `<MI_QSG_HOME>/HealthcareIntegrationProject` folder in VS Code. There are two main options to build and run the integration scenario.
-
-### Option 1: Use the Visual Studio Code
+Now that you have developed an integration using the Micro Integrator for the Visual Studio Code plugin, it's time to deploy the integration to the Micro Integrator server runtime.
 
 Click the **Build and Run** icon located in the top right corner of VS Code.
 
-<a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/build-and-run.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/build-and-run.png" alt="Build and run" width="25%"></a>
+<a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/build-and-run-project.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/build-and-run-project.png" alt="Build and run" width="80%"></a>
 
-### Option 2: Use a local Micro Integrator instance
+## Step 5 - Test the integration service
 
-1. Export the artifacts as a deployable CAR file:
+Now, let's test the integration service. For that, you can use the inbuilt try-it functionality in the MI for VS Code extension.
 
-    a. Go to **MI Overview** using the **Home** icon.
-    
-    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/home-icon.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/home-icon.png" alt="Home icon" width="25%"></a>
-    
-    b. Click the **Build** icon located in the top right corner of VS Code.
-    
-    <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/build-and-export.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/build-and-export.png" alt="Build and export" width="25%"></a>
-    
-    c. Click the **Export** icon next to the **Build** icon.
-    
-    d. Select a destination to export the `.car` file.
-    
-    e. Once you select a folder, the artifacts will be exported as a deployable CAR file to that location.
+When you run the integration artifact as in [Step 4](#step-4-run-the-integration-artifacts), the **Runtime Services** interface is opened up. You can see all the available services.
 
-2. Deploy the Healthcare service: Copy the exported CAR file of the Healthcare service to the `<MI_HOME>/repository/deployment/server/carbonapps` directory.
+Select `HelloWorldAPI` that you have developed and test the resource.
 
-3. Start the Micro Integrator:
+<a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/test-api.gif"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/test-api.gif" alt="Test API" width="80%"></a>
 
-    a. Open a terminal and navigate to the `<MI_HOME>/bin` folder.  
-    b. Execute one of the commands given below.   
+Congratulations!
+Now, you have created your first integration service.
 
-    === "On MacOS/Linux"
-        ```bash 
-        sh micro-integrator.sh
-        ```         
-    === "On Windows"
-        ```bash 
-        micro-integrator.bat
-        ```
-
-## Step 3 - Observe deployed artifacts (Optional)
-
-You can install and start the Integration Control Plane (ICP) to observe details of the deployed artifacts by following the steps below:
-
-1. After deploying the artifacts and starting the Micro Integrator server, stop it before starting the ICP server.
-
-    - If you are running the Micro Integrator runtime [using the Visual Studio Code](#option-1-using-the-visual-studio-code), stop the server using the **Stop** icon.
-    
-          <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/stop-mi-runtime.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/stop-mi-runtime.png" alt="Build and run" width="25%"></a>
-    
-    - If you are [using a local Micro Integrator instance](#option-2-using-a-local-micro-integrator-instance), use the below command:
-
-
-        === "On macOS/Linux"              
-            ```bash 
-            sh micro-integrator.sh stop
-            ```
-        === "On Windows"             
-            ```bash 
-            micro-integrator.bat --stop
-            ```
-
-2. Install and start the Integration Control Plane (ICP) by following the steps below:
-
-     1. Download the [Integration Control Plane]({{base_path}}/install-and-setup/install/installing-integration-control-plane/#installing-the-integration-control-plane_1).
-
-     2. Set up the Micro Integrator: 
-   
-         1. Open the `deployment.toml` file (stored in the `<MI_HOME>/conf/` directory) of the Micro Integrator. 
-         2. Add the following configuration:
-      
-             ```
-             [dashboard_config]
-             dashboard_url = "https://localhost:9743/dashboard/api/"
-             heartbeat_interval = 5
-             group_id = "mi_dev"
-             node_id = "dev_node_2"
-             ```
-
-3. Start the Integration Control Plane:
-
-     1. Open a command prompt as explained below.
-
-          <table>
-                <tr>
-                      <th>On <b>Linux/macOS</b></td>
-                      <td>Establish an SSH connection to the server, log on to the text Linux console, or open a terminal.</td>
-                </tr>
-                <tr>
-                      <th>On <b>Windows</b></td>
-                      <td>Click <b>Start &gt;Run</b>, type <b>cmd</b> at the prompt, and then press <b>Enter</b>.</td>
-                </tr>
-          </table> 
-    
-     2. Navigate to the `<ICP_HOME>/bin` folder from your command line.
-   
-     3. Execute one of the commands given below:
-
-        === "On macOS/Linux"
-            ```bash
-            sh dashboard.sh
-            ```
-        === "On Windows"
-            ```bash
-            dashboard.bat
-            ```
-
-4. Next, restart the Micro Integrator server to register itself with the ICP. Follow the same steps you performed in [Step 2](#step-2-running-the-integration-artifacts).
-
-5. Access the Integration Control Plane:
-
-     1. Once you have started the ICP server, access the ICP server using the following URL:
-
-         ```bash
-         https://localhost:9743/login
-         ```
-
-         <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/icp-login.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/icp-login.png" alt="ICP login" width="80%"></a>
-
-     2. Use the following sign-in details.
-
-        | Username  | Password |
-        |-----------|----------|
-        | `admin`   | `admin`  |
-
-Once you sign in, click on the required artifact type to view its details.
-
-<a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/icp-api-artifacts.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/icp-api-artifacts.png" alt="View API artifacts" width="80%"></a>
-
-## Step 4 - Test the integration service
-
-Now, let's test the integration service.
-
-### Start back-end services
-
-Let's start the mock back-end services for this use case:
- 
-1. Open a terminal, navigate to the `<MI_QSG_HOME>/Backend`, and execute the following command to start the services:
-
-    ```bash
-    java -jar DoctorInfo.jar
-    ```
-
-### Invoke the Healthcare service
-
-1. Invoke the healthcare service.
-
-    Open a terminal and execute the following curl command to invoke the service:
-
-    ```bash
-    curl -v http://localhost:8290/healthcare/doctor/Ophthalmologist
-    ```
-
-    Upon invocation, you should be able to observe the following response:
-
-    ```bash
-    [
-        [
-            {
-                "name":"John Mathew",
-                "time":"03:30 PM",
-                "hospital":"Grand Oak"
-            },
-            {
-                "name":"Allan Silvester",
-                "time":"04:30 PM",
-                "hospital":"Grand Oak"
-            }
-        ],
-        [
-            {
-                "name":"John Mathew",
-                "time":"07:30 AM",
-                "hospital":"pineValley"
-            },
-            {
-                "name":"Roma Katherine",
-                "time":"04:30 PM",
-                "hospital":"pineValley"
-            }
-        ]
-    ]
-    ```
-    **Congratulations!**
-    Now, you have created your first integration service.
+Additionally, you can use the [Integration Control Plane (ICP)]({{base_path}}/observe-and-manage/working-with-integration-control-plane) to observe details of the deployed artifacts.
 
 ## What's next?
 
-- [Develop your first integration solution]({{base_path}}/get-started/development-kickstart/).
-- [Learn more]({{base_path}}/learn/learn-overview/).
+Try more [tutorials and examples]({{base_path}}/learn/learn-overview/).

@@ -43,7 +43,7 @@ The message format compatible with the receiver is as follows:
 All requests in the first format should be translated to the second by the service. 
 
 !!! note
-    The translation is done through the Payload Factory Mediator.
+    The translation is done through the Payload mediator.
 
 ![Message translator scenario]({{base_path}}/assets/img/learn/enterprise-integration-patterns/messaging-systems/message-translator-scenario.png)
 
@@ -109,7 +109,7 @@ Follow the below instructions to simulate this sample scenario.
 
 6. Execute the following command to start the axis2server with the SimpleStockQuote backend service:
 
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash
           sh axis2server.sh
           ```

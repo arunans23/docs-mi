@@ -2,15 +2,38 @@
 
 Gmail is a free, Web-based e-mail service provided by Google. It allows you to send, read, and delete emails through the Gmail REST API. Furthermore, it provides the ability to read, trash, untrash, and delete threads, create, update, and delete drafts, get the Gmail profile, and access the mailbox history as well, while handling OAuth 2.0 authentication.
 
-To see the Gmail Connector, navigate to the [connector store](https://store.wso2.com/store/assets/esbconnector/list) and search for "gmail".
+Go to the <a target="_blank" href="https://store.wso2.com/connector/esb-connector-gmail">WSO2 Connector Store</a> to download the Gmail connector.
 
 <img src="{{base_path}}/assets/img/integrate/connectors/gmail-store.png" title="Gmail Connector Store" width="200" alt="Gmail Connector Store"/>
 
 ## Compatibility
 
-| Connector Version | Supported product versions |
-| ------------- |-------------|
-| 3.0.8    | APIM 4.0.0, EI 7.1.0, EI 7.0.x EI 6.6.0 EI 6.5.0 |
+<table>
+	<tr>
+		<th>
+			Connector version
+		</th>
+		<th>
+			Supported product versions
+		</th>
+	</tr>
+	<tr>
+		<td>
+			4.x (latest)
+		</td>
+		<td>
+			MI 4.4.0
+		</td>
+	</tr>
+	<tr>
+		<td>
+			3.x
+		</td>
+		<td>
+			APIM 4.0.0, EI 7.1.0, EI 7.0.x EI 6.6.0 EI 6.5.0 
+		</td>
+	</tr>
+</table>
 
 For older versions, see the details in the connector store.
 

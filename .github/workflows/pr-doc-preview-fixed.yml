@@ -1,0 +1,313 @@
+name: PR Documentation Preview (Fixed)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'en/docs/**'
+      - 'en/mkdocs.yml'
+      - 'en/requirements.txt'
+
+jobs:
+  build-and-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: |
+          cd en
+          pip install -r requirements.txt
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Get list of changed markdown files
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'en/docs/**/*.md' | head -5)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          
+          # Convert first changed file to URL path for screenshot
+          if [ ! -z "$CHANGED_FILES" ]; then
+            FIRST_FILE=$(echo "$CHANGED_FILES" | head -1)
+            # Convert path like 'en/docs/get-started/introduction.md' to 'get-started/introduction/'
+            URL_PATH=$(echo "$FIRST_FILE" | sed 's|^en/docs/||' | sed 's|\.md$|/|' | sed 's|index/|/|')
+            echo "url_path=$URL_PATH" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "first_file=$FIRST_FILE" >> $GITHUB_OUTPUT
+            echo "Screenshot will be taken for: $URL_PATH"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No markdown files changed"
+          fi
+
+      - name: Build documentation
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          cd en
+          mkdocs build --site-dir ../site
+
+      - name: Setup Node.js for screenshot
+        if: steps.changed-files.outputs.has_changes == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Playwright
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install chromium --with-deps
+
+      - name: Serve documentation and take screenshot
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          cd site
+          
+          # Start a simple HTTP server in background
+          python -m http.server 8000 &
+          SERVER_PID=$!
+          
+          # Wait for server to start
+          sleep 5
+          
+          # Take screenshot using Playwright
+          cat > ../take_screenshot.js << 'EOF'
+          const { chromium } = require('playwright');
+          
+          (async () => {
+            const browser = await chromium.launch({
+              args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+            const page = await browser.newPage();
+            
+            // Set viewport size
+            await page.setViewportSize({ width: 1200, height: 800 });
+            
+            const url = process.argv[2] || 'http://localhost:8000';
+            console.log(`Taking screenshot of: ${url}`);
+            
+            try {
+              await page.goto(url, { 
+                waitUntil: 'networkidle',
+                timeout: 30000 
+              });
+              
+              // Wait for content to load and any animations to complete
+              await page.waitForTimeout(3000);
+              
+              // Hide navigation elements for cleaner screenshot
+              await page.addStyleTag({
+                content: `
+                  .md-header { display: none !important; }
+                  .md-sidebar { display: none !important; }
+                  .md-content { margin-left: 0 !important; max-width: none !important; }
+                `
+              });
+              
+              // Take screenshot of the main content area
+              const content = await page.$('.md-content__inner') || 
+                             await page.$('.md-content') || 
+                             await page.$('main') || 
+                             await page.$('body');
+              
+              if (content) {
+                await content.screenshot({ 
+                  path: '../doc-preview.png',
+                  quality: 90
+                });
+              } else {
+                await page.screenshot({ 
+                  path: '../doc-preview.png',
+                  fullPage: true,
+                  quality: 90
+                });
+              }
+              
+              console.log('Screenshot saved successfully');
+            } catch (error) {
+              console.error('Error taking screenshot:', error);
+              // Take a basic screenshot as fallback
+              await page.screenshot({ 
+                path: '../doc-preview.png',
+                quality: 90
+              });
+            }
+            
+            await browser.close();
+          })();
+          EOF
+          
+          # Execute screenshot script
+          URL_PATH="${{ steps.changed-files.outputs.url_path }}"
+          FULL_URL="http://localhost:8000/${URL_PATH}"
+          cd ..
+          node take_screenshot.js "$FULL_URL"
+          
+          # Kill the server
+          kill $SERVER_PID || true
+          
+          # Verify screenshot was created
+          if [ -f "doc-preview.png" ]; then
+            echo "Screenshot created successfully"
+            ls -la doc-preview.png
+          else
+            echo "Failed to create screenshot"
+            exit 1
+          fi
+
+      - name: Upload screenshot artifact
+        if: steps.changed-files.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-preview-screenshot-${{ github.event.number }}
+          path: doc-preview.png
+          retention-days: 7
+
+      - name: Comment PR with screenshot
+        if: steps.changed-files.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read the screenshot file
+            const screenshotPath = 'doc-preview.png';
+            
+            if (fs.existsSync(screenshotPath)) {
+              // Convert image to base64
+              const imageBuffer = fs.readFileSync(screenshotPath);
+              const base64Image = imageBuffer.toString('base64');
+              
+              // Get PR number and file info
+              const prNumber = context.payload.pull_request.number;
+              const urlPath = '${{ steps.changed-files.outputs.url_path }}';
+              const firstFile = '${{ steps.changed-files.outputs.first_file }}';
+              
+              // Check if there's already a preview comment
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber
+              });
+              
+              const existingComment = comments.data.find(comment => 
+                comment.body.includes('📋 Documentation Preview') && 
+                comment.user.login === 'github-actions[bot]'
+              );
+              
+              const commentBody = `## 📋 Documentation Preview
+              
+              A documentation preview has been generated for the changes in this PR.
+              
+              **Changed File**: \`${firstFile}\`  
+              **Preview Path**: \`${urlPath}\`
+              
+              ### 📸 Preview Screenshot:
+              
+              ![Documentation Preview](data:image/png;base64,${base64Image})
+              
+              ---
+              
+              💡 **Note**: This preview shows how the documentation will look after your changes are merged.
+              
+              <details>
+              <summary>🔧 Technical Details</summary>
+              
+              - **Build Status**: ✅ Success
+              - **MkDocs Version**: Latest with project configuration
+              - **Screenshot Resolution**: 1200x800px
+              - **Timestamp**: ${new Date().toISOString()}
+              - **Workflow Run**: [View Details](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+              
+              </details>`;
+              
+              if (existingComment) {
+                // Update existing comment
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existingComment.id,
+                  body: commentBody
+                });
+                console.log('Updated existing preview comment');
+              } else {
+                // Create new comment
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  body: commentBody
+                });
+                console.log('Created new preview comment');
+              }
+            } else {
+              console.log('Screenshot file not found, skipping comment');
+            }
+
+      - name: Comment on build failure
+        if: failure() && steps.changed-files.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            
+            const commentBody = `## ❌ Documentation Preview Failed
+            
+            The documentation preview could not be generated for this PR. 
+            
+            **Possible Issues:**
+            - Invalid markdown syntax in changed files
+            - Missing images or broken links
+            - MkDocs configuration errors
+            - Build timeout or resource constraints
+            
+            **Next Steps:**
+            1. Check the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for detailed error information
+            2. Verify your markdown files are valid
+            3. Test the build locally with \`mkdocs serve\`
+            4. Push a new commit to retry the preview generation
+            
+            ---
+            
+            🔧 Need help? Check the [MkDocs documentation](https://www.mkdocs.org/) or ask in the PR comments.`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: commentBody
+            });
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ "${{ steps.changed-files.outputs.has_changes }}" == "true" ]; then
+            if [ "${{ job.status }}" == "success" ]; then
+              echo "✅ Documentation preview generated successfully"
+              echo "📸 Screenshot posted to PR #${{ github.event.number }}"
+            else
+              echo "❌ Documentation preview failed"
+              echo "📋 Error details posted to PR #${{ github.event.number }}"
+            fi
+          else
+            echo "ℹ️  No documentation changes detected in this PR"
+            echo "🚫 Skipping preview generation"
+          fi
+          
+          echo "🔗 Workflow: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"

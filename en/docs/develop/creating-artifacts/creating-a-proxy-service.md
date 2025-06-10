@@ -1,58 +1,55 @@
 # Create a Proxy Service
 
-Follow the instructions below to create a new [Proxy Service]({{base_path}}/reference/synapse-properties/proxy-service-properties) artifact in the Micro Integrator for Visual Studio Code extension (MI for VS Code).
+Follow these instructions to create a [Proxy Service]({{base_path}}/reference/synapse-properties/proxy-service-properties) artifact in the Micro Integrator for Visual Studio Code extension (MI for VS Code).
 
-## Instructions
-
-### Create the proxy service artifact
+## Create a new proxy service artifact
 
 {!includes/creating-project.md!}
 
-3. Go to **MI Project Explorer** > **Proxy Services**.
+    Hereafter, this project will be referred to as `<PROJECT_NAME>`.
 
-    <a href="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/create-proxy-service.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/create-proxy-service.png" alt="Create proxy service" width="35%"></a>
-   
-4. Hover over **Proxy Services** and click the **+** icon that appears to open the **Proxy Service Form** below.
+3. To add a new proxy service, navigate to **Micro Integrator Project Explorer**.
 
-5. Enter a unique name for the proxy service.
+4. Click on the **+** icon to open the **Add Artifact** pane.
 
-    <a href="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/proxy-service.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/proxy-service.png" alt="proxy service" width="80%"></a>
+    <a href="{{base_path}}/assets/img/develop/create-artifacts/add-artifact-icon.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/add-artifact-icon.png" alt="add artifact" width="40%"></a>
 
-6. Click **Create**.
+5. Click **+ View More** under **Create an Integration**.
 
-The proxy service is created in the `src/main/wso2mi/artifacts/proxy-services` folder under the project you created.
+6. Click **Proxy** under **Other Artifacts** to open the **Proxy Service Form**.
 
-### Design the integration
+7. Once you complete the **Proxy Service Form**, click **Create**.
 
-1. Go to the **MI Overview** interface.
+!!! info
+    You can switch to the default Visual Studio Code **Explorer** to view the folder structure.
 
-    <a href="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/mi-overview.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/mi-overview.png" alt="MI overview" width="80%"></a>
+    The newly-created proxy service will be stored in the `<PROJECT_NAME>/src/main/wso2mi/artifacts/proxy-services` folder of your integration project.
 
-2. Click on the proxy service you created to go to its **Resource View**.
+## Design the integration
 
-    The default **Resource View** will be as follows:
+1. Go to **MI Project Explorer** > **Other Artifacts** > **Proxy Services**.
+
+2. Click on the proxy service you created to open the **Proxy View**.
+
+3. Click on the **+** icon to open the palette.
    
     <a href="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/proxy-service-design-view.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/proxy-service-design-view.png" alt="source view" width="80%"></a>
 
-3. Add the required mediators and connectors and design the integration flow.
+4. Add the required mediators and connectors and design the integration flow.
 
-   <a href="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/proxy-service-graphical-editor.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/proxy-service-graphical-editor.png" alt="source view" width="80%"></a>
+## Update the configurations
 
-### Update the properties
+1. Go to **MI Project Explorer** > **Other Artifacts** > **Proxy Services**.
 
-#### To update from the Form View:
+2. Click on the proxy service you want to edit to go to its **Proxy View**.
 
-1. In the MI Overview, select the proxy service to go to its **Resource View**.
-
-2. Click the **Edit** icon to edit the proxy service.
+3. Once you open the **Proxy View**, click the **Edit** icon to edit the proxy service.
 
     <a href="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/edit-proxy-service.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/edit-proxy-service.png" alt="Edit proxy service" width="80%"></a>
 
-3. Add the required parameters.
+4. Update the required parameters.
 
-    <a href="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/edit-proxy-view.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/edit-proxy-view.png" alt="Edit proxy view" width="80%"></a>
-
-4. Click **Update**.
+5. Click **Update**.
 
    See the following links for the list of transport parameters you can use:
 
@@ -65,9 +62,9 @@ The proxy service is created in the `src/main/wso2mi/artifacts/proxy-services` f
 
    See the complete list of [service-level properties and parameters]({{base_path}}/reference/synapse-properties/proxy-service-properties) that you can configure.
 
-#### To update from the Source View:
+## Source View
 
-Click the **Show Source** (`</>`) icon located in the top right corner of the VS Code to view the XML-based synapse configuration (source code) of the proxy service.
+Click the **Show Source** (**</>**) icon located in the top right corner of the VS Code to view the XML-based synapse configuration (source code) of the proxy service.
 
 <a href="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/show-source-view.png"><img src="{{base_path}}/assets/img/develop/mi-for-vscode/qsg/show-source-view.png" alt="Show source view" width="30%"></a>
 
@@ -75,11 +72,11 @@ You can update the proxy service using this view.
 
 <a href="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/source-view.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-proxy-service/source-view.png" alt="source view" width="80%"></a>
 
-!!! abstract "Learn more about proxy services"
+## Examples
 
-    Follow our examples on proxy services: 
+Follow our examples on proxy services: 
 
-    - [Using a Simple Proxy Service]({{base_path}}/learn/examples/proxy-service-examples/introduction-to-proxy-services)
-    - [Publishing a Custom WSDL]({{base_path}}/learn/examples/proxy-service-examples/publishing-a-custom-wsdl)
-    - [Exposing a Proxy Service via Inbound Endpoint]({{base_path}}/learn/examples/proxy-service-examples/exposing-proxy-via-inbound)
-    - [Securing Proxy Services]({{base_path}}/learn/examples/proxy-service-examples/securing-proxy-services)
+- [Using a Simple Proxy Service]({{base_path}}/learn/examples/proxy-service-examples/introduction-to-proxy-services)
+- [Publishing a Custom WSDL]({{base_path}}/learn/examples/proxy-service-examples/publishing-a-custom-wsdl)
+- [Exposing a Proxy Service via Inbound Endpoint]({{base_path}}/learn/examples/proxy-service-examples/exposing-proxy-via-inbound)
+- [Securing Proxy Services]({{base_path}}/learn/examples/proxy-service-examples/securing-proxy-services)

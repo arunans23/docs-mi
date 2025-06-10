@@ -187,3 +187,109 @@ request.onerror = function() {
 };
 
 request.send();
+
+document.addEventListener("DOMContentLoaded", function () {
+    var searchInput = document.querySelector("input.md-search__input");
+    let timeout = null;
+
+    if (searchInput) {
+        searchInput.addEventListener("input", function (event) {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                let searchTerm = event.target.value.trim();
+                dataLayer.push({'event':'search','searchTerm':searchTerm});
+            }, 500);
+        });
+    }
+});
+
+var feedback = document.forms.feedback
+
+if (hasUserAcceptedCookies() && !isHomePage()) {
+    feedback.hidden = false
+}
+
+feedback.addEventListener("submit", function(ev) {
+  ev.preventDefault()
+
+  var page = document.location.pathname
+  var data = ev.submitter.getAttribute("data-md-value")
+
+  const pageLabel = page + "_" + data;
+  dataLayer.push({'event':'feedback','pageLabel':pageLabel});
+
+  feedback.firstElementChild.disabled = true
+
+  var note = feedback.querySelector(
+    ".md-feedback__note [data-md-value='" + data + "']"
+  )
+  if (note)
+    note.hidden = false
+})
+
+function isHomePage() {
+    return window.location.pathname === "/" || window.location.pathname === "/en/latest/";
+}
+
+function hasUserAcceptedCookies() {
+    const consentCookie = document.cookie.split('; ').find(row => row.startsWith('OptanonConsent='));
+    if (consentCookie) {
+        return consentCookie.includes('isGpcEnabled=0'); // Check if user has interacted with consent
+    }
+    return false;
+}
+
+// Utility function to process tutorial steps
+function processTutorialSteps(title, steps) {
+    document.querySelectorAll("label.md-nav__title").forEach(label => {
+        if (label.textContent.trim() === title) {
+            const ul = label.nextElementSibling;
+            if (ul && ul.tagName === "UL") {
+                ul.classList.add("custom-integration-list");
+                const listItems = ul.querySelectorAll("li");
+                let count = 1;
+                let completed = true;
+                listItems.forEach(li => {
+                    const link = li.querySelector("a.md-nav__link");
+                    if (link) {
+                        const linkText = link.textContent.trim();
+                        if (steps.includes(linkText)) {
+                            // Remove any existing numbers (if script runs again)
+                            link.innerHTML = link.innerHTML.replace(/^\d+\.\s*/, "");
+                            link.innerHTML = `<span class="custom-number">${count}</span> ${link.innerHTML}`;
+                            count++;
+                            if (completed) {
+                                li.classList.add("md-nav__link--completed");
+                            }
+                            if (li.classList.contains("md-nav__item--active")) {
+                                console.log("active");
+                                completed = false;
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    });
+}
+
+// Define the exact displayed names for "Build your first integration" steps
+const integrationSteps = [
+    "Develop an Integration API",
+    "Route and Transform messages",
+    "Connect to SaaS or B2B Systems",
+    "Monitor and Manage Integrations"
+];
+
+
+// Define the exact displayed names for "Build your first ai integration" steps
+const aiIntegrationSteps = [
+    "Build an AI Chatbot",
+    "Build a Knowledge Base",
+    "Connect a Knowledge Base to the Chatbot",
+    "Create an AI Agent"
+];
+
+// Process tutorials
+processTutorialSteps("Build your first Integration", integrationSteps);
+processTutorialSteps("Build your first AI Integration", aiIntegrationSteps);

@@ -1,4 +1,5 @@
-# Using the HL7 Inbound Endpoint (with Auto Ack)
+# How to Use an HL7 Inbound Endpoint (with Auto Ack)
+
 The HL7 inbound endpoint implementation is fully asynchronous and is based on the Minimal Lower Layer Protocol(MLLP) implemented on top of event driven I/O.
 
 ## Synapse configuration
@@ -24,10 +25,8 @@ Following are the integration artifacts that we can used to implement this scena
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <sequence name="msgReceiveSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
-        <inSequence>
-            <log level="full"/>
-            <drop/>
-        </inSequence>
+        <log level="full"/>
+        <drop/>
     </sequence>
     ```
 === "Fault Sequence"

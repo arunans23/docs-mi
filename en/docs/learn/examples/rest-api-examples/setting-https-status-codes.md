@@ -1,4 +1,4 @@
-# Handling HTTP Status Codes
+# How to Handle HTTP Status Codes
 A REST service typically sends HTTP status codes with its response. When you configure an API that send messages to a SOAP back-end service, you can set the status code of the HTTP response within the configuration. To achieve this, set the status code parameter within the API resource definition.
 
 ## Synapse configuration  
@@ -54,7 +54,7 @@ Set up the back-end service:
 3. Open a terminal, navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
  
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash
           sh axis2server.sh
           ```

@@ -1,4 +1,5 @@
-# Using the WSDL Endpoint
+# How to Use a WSDL Endpoint
+
 This sample demonstrates how you can use a WSDL endpoint as the target
 endpoint. The configuration in this sample uses a WSDL endpoint inside
 the send mediator. This WSDL endpoint extracts the target endpoint reference from the WSDL document specified in the configuration. In this
@@ -44,7 +45,7 @@ Set up the back-end service:
 3. Open a terminal, navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
 
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash
           sh axis2server.sh
           ```

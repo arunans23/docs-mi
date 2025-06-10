@@ -4,7 +4,7 @@ The File Connector allows you to connect to different file systems and perform v
 
 File Connector introduces the independent operations related to the file system and allows you to easily manipulate files based on your requirement. The file streaming functionality using Apache Commons I/O lets you copy large files and reduces the file transfer time between two file systems resulting in a significant improvement in performance that can be utilized in file operations.
 
-To see the available File connector, navigate to the [connector store](https://store.wso2.com/store/assets/esbconnector/list) and search for "File".
+Go to the <a target="_blank" href="https://store.wso2.com/connector/esb-connector-file">WSO2 Connector Store</a> to download the File connector.
 
 <img src="{{base_path}}/assets/img/integrate/connectors/file-connector-store.png" title="File Connector Store" width="200" alt="File Connector Store"/>
 
@@ -21,7 +21,15 @@ To see the available File connector, navigate to the [connector store](https://s
 	</tr>
 	<tr>
 		<td>
-			4.x (latest)
+			5.x
+		</td>
+		<td>
+			MI 4.4.0
+		</td>
+	</tr>
+	<tr>
+		<td>
+			4.x
 		</td>
 		<td>
 			APIM 4.0.0, EI 6.4.0, EI 6.5.0, EI 6.6.0, EI 7.0.x, EI 7.1.0
@@ -39,11 +47,11 @@ To see the available File connector, navigate to the [connector store](https://s
 
 For older versions, see the details in the connector store.
 
-## File Connector documentation (latest - 4.x version)
+## File Connector documentation (latest - 5.x version)
 
-* **[File Connector Example]({{base_path}}/reference/connectors/file-connector/file-connector-example/)**: This example explains how to use File Connector to create a file in the local file system and read the particular file. 
+* **[File Connector Example]({{base_path}}/reference/connectors/file-connector/5.x/file-connector-example/)**: This example explains how to use File Connector to create a file in the local file system and read the particular file. 
 
-* **[File Connector Reference]({{base_path}}/reference/connectors/file-connector/file-connector-config/)**: This documentation provides a reference guide for the File Connector.
+* **[File Connector Reference]({{base_path}}/reference/connectors/file-connector/5.x/file-connector-config/)**: This documentation provides a reference guide for the File Connector.
 
 For older versions, see the details in the relevant links.
 

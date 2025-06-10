@@ -6,11 +6,20 @@ This section describes how to configure WSO2 Micro Integrator to connect with Ac
 
 Follow the instructions below to set up and configure.
 
-1.  Download [Apache ActiveMQ](http://activemq.apache.org/).
+1.  Download [Apache ActiveMQ](http://activemq.apache.org/). Micro Integrator supports ActiveMQ Classic versions up to 5.18.x.
 2.  Download and install WSO2 Micro Integrator.
 3.  Copy the following client libraries from the `ACTIVEMQ_HOME/lib` directory to the `MI_HOME/lib` directory.
 
-    **ActiveMQ 5.8.0 and above**
+    **ActiveMQ 5.18.x**
+
+    -   activemq-broker-5.18.0.jar
+    -   activemq-client-5.18.0.jar
+    -   activemq-kahadb-store-5.18.0.jar
+    -   hawtbuf-1.9.jar
+    -   Slf4j-api-1.6.6.jar
+    -   activeio-core-3.1.4.jar (available in the `ACTIVEMQ_HOME/lib/optional` directory)
+
+    **ActiveMQ 5.8.0 to 5.17.x**
 
     -   activemq-broker-5.8.0.jar
     -   activemq-client-5.8.0.jar

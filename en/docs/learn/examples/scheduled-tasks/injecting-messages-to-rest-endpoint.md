@@ -1,4 +1,4 @@
-# Injecting Messages to a RESTful Endpoint
+# How to Inject Messages to a RESTful Endpoint
 In order to use the Message Injector to inject messages to a RESTful endpoint, you can specify the injector with the required payload and inject the message to the sequence or proxy service as defined below. The sample below shows a RESTful message injection through a proxy service.
 
 ## Synapse configurations
@@ -55,7 +55,7 @@ Following are the integration artifacts that we can used to implement this scena
 Create the artifacts:
 
 {!includes/build-and-run.md!}
-3. Create the [proxy service]({{base_path}}/develop/creating-artifacts/creating-a-proxy-service) and a [scheduled task]({{base_path}}/develop/creating-artifacts/creating-scheduled-task) with the configurations given above.
+3. Create the [proxy service]({{base_path}}/develop/creating-artifacts/creating-a-proxy-service), [endpoint]({{base_path}}/develop/creating-artifacts/creating-endpoint-templates), and a [scheduled task]({{base_path}}/develop/creating-artifacts/creating-scheduled-task) with the configurations given above.
 4. [Deploy the artifacts]({{base_path}}/develop/deploy-artifacts) in your Micro Integrator.
 
 The XML message you injected (i.e., This is a scheduled task of the default implementation.) will be printed in the logs of the Micro Integrator twice, 5 seconds apart.

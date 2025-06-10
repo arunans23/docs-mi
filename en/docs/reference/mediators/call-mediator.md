@@ -1,5 +1,8 @@
 # Call Mediator
 
+!!! Note  
+    Starting from WSO2 MI 4.4.0, a new [**HTTP Connector**]({{base_path}}/reference/connectors/http-connector/http-connector-overview/) is available for invoking HTTP backends. While the **Call Mediator** can still be used, the HTTP connector provides a more flexible and feature-rich approach for handling HTTP requests. It is **recommended** to use the [HTTP Connector]({{base_path}}/reference/connectors/http-connector/http-connector-overview/) for new implementations.
+
 The **Call mediator** is used to send messages out of the Micro Integrator to an **endpoint**. You can invoke services either in blocking or non-blocking manner.
 
 When you invoke a service in non-blocking mode, the underlying worker
@@ -28,9 +31,6 @@ Endpoint is only supported in non-blocking mode.
 
 By default, when you use the Call mediator, the current message body in the mediation is sent out 
 as the request payload. The response you receive replaces the current message body.
-
-!!! Info
-    The Call mediator is a [conditionally content aware]({{base_path}}/reference/mediators/about-mediators/#classification-of-mediators).
 
 ## Enabling mutual SSL in the blocking mode
 
@@ -179,7 +179,7 @@ The following properties are available when you want to configure a target prope
 In this example, the Call mediator invokes a backend service. An [Enrich mediator]({{base_path}}/reference/mediators/enrich-mediator) stores the response received for
 that service invocation.
 
-The [Filter Mediator]({{base_path}}/reference/mediators/filter-mediator) added after the Call mediator
+The [If Else Mediator]({{base_path}}/reference/mediators/filter-mediator) added after the Call mediator
 carries out a filter to determine whether the first call has been
 successful. If it is successful, second backend service is invoked. The
 payload of the request to the second backend is the response of the
@@ -295,7 +295,7 @@ the Call mediator response.
 
 ### Example 3 - Call mediator in blocking mode
 
-In the following sample configuration, the [Header Mediator]({{base_path}}/reference/mediators/header-mediator) is used to add the action, the [PayloadFactory Mediator]({{base_path}}/reference/mediators/payloadfactory-mediator) is used to store the request message and the Call mediator is used to invoke a backend service. You will see that the payload of the request and header action are sent to the backend. After successful backend service invocation, you will see that the response of the service is retrieved by the Micro Integrator and sent to the client as the response using the [Respond Mediator]({{base_path}}/reference/mediators/respond-mediator).
+In the following sample configuration, the [Header Mediator]({{base_path}}/reference/mediators/header-mediator) is used to add the action, the [Payload Mediator]({{base_path}}/reference/mediators/payloadfactory-mediator) is used to store the request message and the Call mediator is used to invoke a backend service. You will see that the payload of the request and header action are sent to the backend. After successful backend service invocation, you will see that the response of the service is retrieved by the Micro Integrator and sent to the client as the response using the [Respond Mediator]({{base_path}}/reference/mediators/respond-mediator).
 
 ```xml
 <target>

@@ -1,6 +1,6 @@
-# Developing Integration Solutions
+# Develop Integration Solutions
 
-The contents on this page will walk you through the topics related to developing integration solutions using WSO2 Micro Integrator extension for Visual Studio Code: MI for VS Code.
+The contents on this page will walk you through the topics related to developing integration solutions using WSO2 Micro Integrator for Visual Studio Code extension: MI for VS Code.
 
 ## Micro Integrator for Visual Studio Code (MI for VS Code)
 
@@ -29,6 +29,14 @@ MI for VS Code is the comprehensive developer tool, which you will use to <b>dev
         </td>
         <td>
             Find details on how to troubleshoot errors you might encounter as you use MI for VS Code.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="{{base_path}}/develop/mi-for-vscode/mi-copilot">MI Copilot</a>
+        </td>
+        <td>
+            Explore the capabilities of MI Copilot and learn how to integrate it into your projects.
         </td>
     </tr>
 </table>
@@ -112,13 +120,10 @@ To start developing integration solutions, you need to first <a href="{{base_pat
                     <li>
                         <a href="{{base_path}}/develop/creating-artifacts/data-services/creating-datasources/">Datasource</a>
                     </li>
-                    <li>
-                        <a href="{{base_path}}/develop/creating-artifacts/data-services/creating-input-validators/">Input Validator</a>
-                    </li>
                 </ul>
             </td>
             <td>
-                <b>Custom Artifacts</b>
+                <b>Extensions</b>
                 <ul>
                     <li>
                         <a href="{{base_path}}/develop/customizations/creating-custom-mediators/">Custom Mediator</a>
@@ -140,9 +145,6 @@ To start developing integration solutions, you need to first <a href="{{base_pat
             <td>
                 <b>Other</b>
                 <ul>
-                    <li>
-                        <a href="{{base_path}}/develop/exporting-artifacts/">Export Artifacts</a>
-                    </li>
                     <li>
                         <a href="{{base_path}}/develop/importing-artifacts/">Import Artifacts</a>
                     </li>
@@ -275,14 +277,6 @@ It is recommended to use a <b>CI/CD pipeline</b> to deploy your tested integrati
 ## Related topics
 
 <table>
-    <tr>
-        <td>
-            <b><a href="{{base_path}}/get-started/development-kickstart/">Develop your first integration</a></b>
-        </td>
-        <td>
-            Try the development workflow end-to-end by running a simple use case.
-        </td>
-    </tr>
     <tr>
         <td>
             <b><a href="{{base_path}}/learn/learn-overview/#integration-use-cases">Integration Use Cases</a></b>

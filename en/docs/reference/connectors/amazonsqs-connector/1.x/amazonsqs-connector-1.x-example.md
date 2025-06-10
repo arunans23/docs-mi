@@ -14,7 +14,7 @@ If you do not want to configure this yourself, you can simply [get the project](
 
 ## Set up the environment 
 
-1. Follow the steps mentioned in the [Setting up the Amazon S3 Environment]({{base_path}}/reference/connectors/amazonsqs-connector/1.x/amazonsqs-connector-config) document to create an Amazon account and obtain access key ID and secret access key. Keep them saved to use in the next steps.  
+1. Follow the steps mentioned in the [Setting up Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-setting-up.html) document to create an Amazon account and obtain access key ID and secret access key. Keep them saved to use in the next steps.  
 
 2. In this example, we will be using XPath 2.0 which needs to be enabled in the product as shown below before starting the integration service. 
 
@@ -100,7 +100,7 @@ If you do not want to configure this yourself, you can simply [get the project](
     
     <img src="{{base_path}}/assets/img/integrate/connectors/amazon-sqs/create-new-sequence.png" title="Adding a Sequence" width="800" alt="Adding a Sequence"/>
 
-8. Provide the Sequence name as `buildMessage` and click **Create**. You can go to the source view of the XML configuration file of the sequence and copy the following configuration. In this sequence we are taking the user's input `companyName` and we build the message using a Payload Factory Mediator. 
+8. Provide the Sequence name as `buildMessage` and click **Create**. You can go to the source view of the XML configuration file of the sequence and copy the following configuration. In this sequence we are taking the user's input `companyName` and we build the message using a Payload mediator. 
     ```
       <?xml version="1.0" encoding="UTF-8"?>
       <sequence name="buildMessage" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
@@ -227,14 +227,14 @@ Follow the steps in [deploy-artifacts]({{base_path}}/develop/deploy-artifacts) g
     3. Open a terminal and navigate to the `axis2Server/bin/` directory inside the extracted folder.
     4. Execute the following command to start the axis2server with the `SimpleStockQuote` back-end service:
 
-       === "On MacOS/Linux/CentOS"   
-       ```bash
-       sh axis2server.sh
-       ```
-       === "On Windows"              
-       ```bash
-       axis2server.bat
-       ```
+        === "On MacOS/Linux"   
+            ```bash
+            sh axis2server.sh
+            ```
+        === "On Windows"              
+            ```bash
+            axis2server.bat
+            ```
 
 3. Invoke the API as shown below using the curl command. Curl Application can be downloaded from [here](https://curl.haxx.se/download.html).
 

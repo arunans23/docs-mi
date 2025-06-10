@@ -1,4 +1,4 @@
-# Guaranteed Delivery with Failover
+# How to Implement a Guaranteed Delivery with Failover
 
 WSO2 Micro Integrator ensures guaranteed delivery with the failover message store and scheduled failover message forwarding processor. The topics in the following section describe how you can set up guaranteed message delivery with failover configurations.
 
@@ -147,7 +147,7 @@ Set up the back-end service:
 3. Open a terminal and navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
 
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash
           sh axis2server.sh
           ```

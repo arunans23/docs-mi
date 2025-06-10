@@ -2,7 +2,7 @@
 
 SMPP (Short Message Peer-to-Peer Protocol) is an open, industry standard protocol designed to provide a flexible data communications interface for transfer of short message data between SMSCs (Short Message Service Center). There are many SMPP gateways available in the world and now almost all the Message Centers support SMPP. 
 
-To see the available SMPP connector, navigate to the [connector store](https://store.wso2.com/store/assets/esbconnector/list) and search for "SMPP".
+Go to the <a target="_blank" href="https://store.wso2.com/connector/esb-connector-smpp">WSO2 Connector Store</a> to download the SMPP connector.
 
 <img src="{{base_path}}/assets/img/integrate/connectors/smpp-store.png" title="SMPP Connector Store" width="200" alt="SMPP Connector Store"/>
 
@@ -10,7 +10,8 @@ To see the available SMPP connector, navigate to the [connector store](https://s
 
 | Connector version | Supported product versions |
 | ------------- |------------- |
-|  1.1.0        |  APIM 4.0.0, EI 7.1.0, EI 7.0.x, EI 6.6.0, EI 6.5.0, MI 4.0.0, MI 4.1.0, MI 4.2.0 |
+|  2.x.x        |  MI 4.4.0 |
+|  1.1.x        |  APIM 4.0.0, EI 7.1.0, EI 7.0.x, EI 6.6.0, EI 6.5.0, MI 4.0.0, MI 4.1.0, MI 4.2.0 |
 
 For older versions, see the details in the connector store.
 

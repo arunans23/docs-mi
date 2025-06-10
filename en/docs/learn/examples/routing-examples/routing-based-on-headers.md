@@ -1,4 +1,4 @@
-# Routing Based on Message Headers
+# How to Route Requests Based on Message Headers
 
 This example scenario uses an inventory of stocks as the back-end service. A proxy service is configured in the Micro Integrator to use separate mediation sequences for processing request messages with different **message headers**. 
 
@@ -11,72 +11,85 @@ Listed below are the synapse configurations for implementing this scenario. See 
 === "Proxy Service"
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
-    <proxy xmlns="http://ws.apache.org/ns/synapse" name="HeaderBasedRoutingProxy" transports="https http" startOnLoad="true" trace="disable">
-       <target>
-          <!-- When a request arrives the following sequence will be followed -->
-          <inSequence>
-             <switch xmlns:ns="http://org.apache.synapse/xsd" source="get-property('transport','CustomHeader')">
-                <case regex="application/json">
-                   <log level="custom">
-                      <property name="'CustomHeader'" value="application/json" />
-                   </log>
-                   <sequence key="sequence1" />
-                </case>
-                <case regex="text/xml">
-                   <log level="custom">
-                      <property name="'CustomHeader'" value="text/xml" />
-                   </log>
-                   <sequence key="sequence2" />
-                </case>
-                <default>
-                   <log level="custom">
-                      <property name="AcceptHeader" value="other" />
-                   </log>
-                   <sequence key="sequence3" />
-                </default>
-             </switch>
-          </inSequence>
-       </target>
+    <proxy name="HeaderBasedRoutingProxy" startOnLoad="true" transports="http https" xmlns="http://ws.apache.org/ns/synapse">
+        <target>
+            <inSequence>
+                <switch source="${headers.CustomHeader}">
+                    <case regex="application/json">
+                        <log category="INFO">
+                            <message>Custom Header = application/json</message>
+                        </log>
+                        <sequence key="sequence1"/>
+                    </case>
+                    <case regex="text/xml">
+                        <log category="INFO">
+                            <message>Custom Header = text/xml</message>
+                        </log>
+                        <sequence key="sequence2"/>
+                    </case>
+                    <default>
+                        <log category="INFO">
+                            <message>Accept Header = other</message>
+                        </log>
+                        <sequence key="sequence3"/>
+                    </default>
+                </switch>
+            </inSequence>
+            <faultSequence/>
+        </target>
     </proxy>
     ```
 === "Sequence 1"     
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
-    <sequence xmlns="http://ws.apache.org/ns/synapse" name="sequence1"> 
-            <sequence key="send_seq"/> 
-            <property name="messageType" value="application/json" scope="axis2"/>
-            <respond/>
+    <sequence name="sequence1" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+        <sequence key="send_seq"/>
+        <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+        <respond/>
     </sequence>
     ```
 === "Sequence 2"    
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
-    <sequence xmlns="http://ws.apache.org/ns/synapse" name="sequence2"> 
-            <sequence key="send_seq"/> 
-            <property name="messageType" value="text/xml" scope="axis2"/>
-            <respond/>
+    <sequence name="sequence2" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+        <sequence key="send_seq"/>
+        <property name="messageType" scope="axis2" type="STRING" value="text/xml"/>
+        <respond/>
     </sequence>
     ```
 === "Sequence 3"
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
-    <sequence xmlns="http://ws.apache.org/ns/synapse" name="sequence3"> 
-            <sequence key="send_seq"/> 
-            <respond/>
+    <sequence name="sequence3" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+        <sequence key="send_seq"/>
+        <respond/>
     </sequence>
     ```    
 === "Send Seq"     
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
-    <sequence xmlns="http://ws.apache.org/ns/synapse" name="send_seq"> 
-        <header name="Action" scope="default" value="urn:getQuote"/>
-        <call> 
-          <endpoint name="simple">
-           <address uri="http://localhost:9000/services/SimpleStockQuoteService"/> 
-          </endpoint> 
-        </call> 
+    <sequence name="send_seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+        <header name="Action" action="set" scope="default" value="urn:getQuote"/>
+        <call>
+            <endpoint key="stockQuoteEndpoint"/>
+        </call>
     </sequence>
     ```   
+=== "Endpoint"
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <endpoint name="stockQuoteEndpoint" xmlns="http://ws.apache.org/ns/synapse">
+        <address uri="http://localhost:9000/services/SimpleStockQuoteService">
+            <suspendOnFailure>
+                <initialDuration>-1</initialDuration>
+                <progressionFactor>1</progressionFactor>
+            </suspendOnFailure>
+            <markForSuspension>
+                <retriesBeforeSuspension>0</retriesBeforeSuspension>
+            </markForSuspension>
+        </address>
+    </endpoint>
+    ```
 
 ## Build and run
 
@@ -93,7 +106,7 @@ Set up the back-end service:
 3. Open a terminal, navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
 
-    === "On MacOS/Linux/CentOS"            
+    === "On MacOS/Linux"            
         ```bash
         sh axis2server.sh
         ```

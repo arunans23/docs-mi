@@ -1,7 +1,4 @@
-# Using Distributed Transactions in Data Services
-
-!!! Warning
-    **The contents on this page are currently under review!**
+# How to Use Distributed Transactions in Data Services
 
 The data integration feature in WSO2 Micro Integrator supports data
 federation, which means that a single data service can expose data from
@@ -113,7 +110,7 @@ Create the artifacts:
 5. Switch to the **EXPLORER** view in VS Code and copy the downloaded driver to the `<PROJECT_NAME>/deployment/lib/` directory in the project structure.
 
     !!! Note
-       If the driver class does not exist in the relevant folders when you create the datasource, you will get an exception such as `Unable to load class: com.mysql.jdbc.Driver`.
+        If the driver class does not exist in the relevant folders when you create the datasource, you will get an exception such as `Unable to load class: com.mysql.jdbc.Driver`.
 
 6. [Deploy the artifacts]({{base_path}}/develop/deploy-artifacts) in your Micro Integrator.
 

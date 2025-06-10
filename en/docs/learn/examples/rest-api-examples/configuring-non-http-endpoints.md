@@ -1,4 +1,4 @@
-# Exposing Non-HTTP Services as RESTful APIs
+# How to Expose a Non-HTTP Services as a RESTful API
 This example demonstrates how the WSO2 Micro Integrator forwards messages to non-HTTP endpoints.
 
 ## Synapse configuration
@@ -45,7 +45,7 @@ Set up the back-end service:
 3. Open a terminal, navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
 
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash
           sh axis2server.sh
           ```

@@ -1,4 +1,5 @@
-# Using the MQTT Inbound Endpoint
+# How to Use an MQTT Inbound Endpoint
+
 This sample demonstrates how the MQTT connector publishes a message on a
 particular topic and how a MQTT client that is subscribed to that topic
 receives the message. 
@@ -24,6 +25,7 @@ Following are the integration artifacts that we can used to implement this scena
             <parameter name="mqtt.session.clean">false</parameter>
             <parameter name="mqtt.ssl.enable">false</parameter>
             <parameter name="mqtt.reconnection.interval">1000</parameter>
+            <parameter name="mqtt.client.id">clientTestID</parameter>
         </parameters>
     </inboundEndpoint>
     ```

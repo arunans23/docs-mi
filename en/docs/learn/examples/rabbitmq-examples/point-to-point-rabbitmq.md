@@ -1,4 +1,4 @@
-# A queue used to deliver a message to a consumer
+# How to Implement Point to Point Messaging Using RabbitMQ
 
 This example demonstrates how WSO2 Micro Integrator can be used to implement an asynchronous point-to-point messaging scenario using queues in a RabbitMQ broker instance.
 
@@ -20,11 +20,6 @@ See the instructions on how to [build and run](#build-and-run) this example.
               <log level="custom">
                    <property name="Message Received" expression="//Message"/>
               </log>
-              <call>
-                  <endpoint>
-                      <http uri-template="http://localhost:8280/employees" method="post"/>
-                  </endpoint>
-              </call>
           </inSequence>
       </target>
       <parameter name="rabbitmq.queue.name">queue1</parameter>

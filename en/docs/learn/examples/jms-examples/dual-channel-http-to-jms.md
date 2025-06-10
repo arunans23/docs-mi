@@ -1,4 +1,4 @@
-# JMS Synchronous Invocations: Dual Channel HTTP-to-JMS
+# How to Implement JMS Synchronous Invocations - Dual Channel HTTP-to-JMS
 
 A JMS synchronous invocation occurs when a JMS producer receives a response to a JMS request it produced when invoked. The WSO2 Micro Integrator uses an internal **JMS correlation ID** to correlate the request and the response. See [JMSRequest/ReplyExample](http://www.eaipatterns.com/RequestReplyJmsExample.html) for more information. JMS synchronous invocations are further explained in the following use case.
 
@@ -207,7 +207,7 @@ Set up the backend service:
 3. Open a terminal, and navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
             
-    === "On MacOS/Linux/CentOS"
+    === "On MacOS/Linux"
           ```bash 
           sh axis2server.sh
           ```

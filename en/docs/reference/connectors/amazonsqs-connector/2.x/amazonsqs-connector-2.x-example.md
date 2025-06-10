@@ -20,7 +20,7 @@ If you do not want to configure this yourself, you can simply [get the project](
    
      - [apache-client-2.20.26.jar ](https://mvnrepository.com/artifact/software.amazon.awssdk/apache-client/2.26.20)
      - [auth-2.26.20.jar](https://mvnrepository.com/artifact/software.amazon.awssdk/auth/2.26.20) 
-     - [aws-core-2.26.20.jar](https://mvnrepository.com/artifact/software.amazon.awssdk/sdk-core/2.26.20)
+     - [aws-core-2.26.20.jar](https://mvnrepository.com/artifact/software.amazon.awssdk/aws-core/2.26.20)
      - [checksums-2.26.20.jar](https://mvnrepository.com/artifact/software.amazon.awssdk/checksums/2.26.20) 
      - [checksums-spi-2.26.20.jar](https://mvnrepository.com/artifact/software.amazon.awssdk/checksums-spi/2.26.20) 
      - [endpoints-spi-2.26.20.jar](https://mvnrepository.com/artifact/software.amazon.awssdk/endpoints-spi/2.26.20) 
@@ -104,7 +104,7 @@ Follow the steps in [create integration project]({{base_path}}/develop/create-in
     
     <img src="{{base_path}}/assets/img/integrate/connectors/amazon-sqs/create-new-sequence.png" title="Adding a Sequence" width="800" alt="Adding a Sequence"/>
 
-8. Provide the Sequence name as `buildMessage` and click **Create**. You can go to the source view of the XML configuration file of the sequence and copy the following configuration. In this sequence we are taking the user's input `companyName` and we build the message using a Payload Factory Mediator.
+8. Provide the Sequence name as `buildMessage` and click **Create**. You can go to the source view of the XML configuration file of the sequence and copy the following configuration. In this sequence we are taking the user's input `companyName` and we build the message using a Payload mediator.
    ```xml
       <?xml version="1.0" encoding="UTF-8"?>
       <sequence name="buildMessage" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
@@ -235,7 +235,7 @@ Follow the steps in [deploy-artifacts]({{base_path}}/develop/deploy-artifacts) g
     3. Open a terminal and navigate to the `axis2Server/bin/` directory inside the extracted folder.
     4. Execute the following command to start the axis2server with the `SimpleStockQuote` back-end service:
 
-        === "On MacOS/Linux/CentOS"   
+        === "On MacOS/Linux"   
             ```bash
              sh axis2server.sh
             ```

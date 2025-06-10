@@ -1,4 +1,4 @@
-# Converting JSON to SOAP 
+# How to Transform a JSON Message to SOAP
 
 Let's consider a scenario where you have a SOAP-based backend and a JSON client. The SOAP backend is exposed as a REST API in the Micro Integrator. 
 
@@ -6,9 +6,9 @@ When the JSON client sends a message to the SOAP backend, the REST API in the Mi
 
 The following examples explain different methods of converting JSON messages to SOAP using the Micro Integrator.
 
-## Using the PayloadFactory mediator
+## Using the Payload mediator
 
-Let's convert JSON messages to SOAP using the [PayloadFactory mediator]({{base_path}}/reference/mediators/payloadfactory-mediator).
+Let's convert JSON messages to SOAP using the [Payload mediator]({{base_path}}/reference/mediators/payloadfactory-mediator).
 
 ### Synapse configuration
 Following is a sample REST API configuration that we can use to implement this scenario. See the instructions on how to [build and run](#build-and-run-example-1) this example.
@@ -83,7 +83,7 @@ Set up the backend service:
 3. Open a terminal, and navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote backend service:
  
-    === "On MacOS/Linux/CentOS"        
+    === "On MacOS/Linux"        
           ```bash 
           sh axis2server.sh
           ```
@@ -197,7 +197,7 @@ Set up the backend service:
 3. Open a terminal, and navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote backend service:
 
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash 
           sh axis2server.sh
           ```

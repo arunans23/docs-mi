@@ -2,23 +2,41 @@
 
 Follow the steps given below to install the Integration Control Plane (ICP).
 
+## Before you begin
+
+See the [Integration Control Plane Installation Prerequisites]({{base_path}}/install-and-setup/install/icp-installation-prerequisites).
+Java Development Kit (JDK) is essential to run the product.
+
 ## Installing the Integration Control Plane
 
-1.  Go to the [WSO2 Micro Integrator web page](https://wso2.com/integration/micro-integrator/#), click **Download**, and then click **Other Components/MI Dashboard** to download the Integration Control Plane as a ZIP file.
-2.  Extract the archive file to a dedicated directory for the Integration Control Plane, which will hereafter be referred to as `<ICP_HOME>`.
+1. Go to the [WSO2 Integration Control Plane web page](https://wso2.com/integrator/integration-control-plane/).
+
+2. Click **Download**.
+
+3. Provide the necessary details.  
+
+4. Click **Zip Archive** to download the Integration Control Plane as a ZIP file.
+
+5. Extract the archive file to a dedicated directory for the Integration Control Plane, which will hereafter be referred to as `<ICP_HOME>`.
 
 !!! info
     To connect the MI servers with the ICP server, add the following configuration to the `deployment.toml` file (stored in the `<MI_HOME>/conf/` folder) of each server instance.
-    ```
-    [dashboard_config]
-    dashboard_url = "https://{hostname/ip}:{port}/dashboard/api/"
-    heartbeat_interval = 5
-    group_id = "mi_dev"
-    node_id = "dev_node_2"
-    ```
+        ```toml
+        [dashboard_config]
+        dashboard_url = "https://{hostname/ip}:{port}/dashboard/api/"
+        heartbeat_interval = "<HEARTBEAT_INTERVAL>"
+        group_id = "<GROUP_ID>"
+        node_id = "<NODE_ID>"
+        ```
+        For example:
+        ```toml
+        [dashboard_config]
+        dashboard_url = "https://localhost:9743/dashboard/api/"
+        heartbeat_interval = 5
+        group_id = "mi_dev"
+        node_id = "dev_node_2"
+        ```
     For more information, see [Configure the MI servers]({{base_path}}/observe-and-manage/working-with-integration-control-plane/#step-2-configure-the-mi-servers).
-
-
 
 ## Setting up JAVA_HOME
 

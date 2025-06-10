@@ -13,7 +13,7 @@ The Claim Check EIP reduces the data volume of messages sent across a system wit
 
 ## Sample scenario
 
-The following scenario illustrates an instance where a stock quote requires authentication in order for it to allow access to the back-end service on the Axis2 server. For authentication, it is not necessary for the whole message to flow through the mediation. Instead, initially, the whole request will be stored in a property using the Enrich mediator, and the request will then be filtered to contain only the user name. The filtered message will be taken through the authentication step by the Filter mediator. If the authentication succeeds, the original content will be retrieved from the property by the Enrich mediator, and the whole message will be forwarded to the Axis2 server.
+The following scenario illustrates an instance where a stock quote requires authentication in order for it to allow access to the back-end service on the Axis2 server. For authentication, it is not necessary for the whole message to flow through the mediation. Instead, initially, the whole request will be stored in a property using the Enrich mediator, and the request will then be filtered to contain only the user name. The filtered message will be taken through the authentication step by the If Else mediator. If the authentication succeeds, the original content will be retrieved from the property by the Enrich mediator, and the whole message will be forwarded to the Axis2 server.
 
 The diagram below depicts how to simulate the example scenario using WSO2 MI.
 
@@ -98,8 +98,8 @@ Before digging into implementation details, let's take a look at the relationshi
 Let's investigate the elements of the synapse configuration in detail.
 
 - Enrich mediator append the original message body as a new property `CLAIM_STORE` inside the message context.
-- The PayloadFactory is used to simplify the original message to contain credential information only.
-- A filter mediator is used to check if the credential information exists inside the new message body. The property `Validity` is set based on this.
+- The Payload mediator is used to simplify the original message to contain credential information only.
+- An If Else mediator is used to check if the credential information exists inside the new message body. The property `Validity` is set based on this.
 - Once the validity is set, another enrich mediator is used to retrieve the original message stored in the `CLAIM_STORE` context and replace the body of the SOAP payload with it.
 
 The message is optimized as shown below to go through the authentication process inside the WSO2 MI. Once the authentication is done, the original message will be attached back to the payload and sent to the back-end service. 
@@ -126,7 +126,7 @@ Follow the below instructions to simulate this sample scenario.
     3. Open a terminal, and navigate to the `axis2Server/bin/` directory inside the extracted folder.
     4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
 
-    === "On MacOS/Linux/CentOS"
+    === "On MacOS/Linux"
         ```bash
         sh axis2server.sh
         ```
@@ -153,10 +153,12 @@ Follow the below instructions to simulate this sample scenario.
 Send a request like the following to the client.
 
 ```bash
-curl --location 'http://localhost:8290/services/ClaimCheckProxy' \
---header 'SOAPAction: urn:getQuote' \
---header 'Content-Type: text/xml' \
---data '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.samples" xmlns:xsd="http://services.samples/xsd">
+POST /services/ClaimCheckProxy HTTP/1.1
+Host: localhost:8290
+SOAPAction: urn:getQuote
+Content-Type: text/xml
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://services.samples" xmlns:xsd="http://services.samples/xsd">
    <soapenv:Header>
      <ser:credentials>
           <ser:name>UserName</ser:name>
@@ -164,14 +166,13 @@ curl --location 'http://localhost:8290/services/ClaimCheckProxy' \
       </ser:credentials>
      </soapenv:Header>
    <soapenv:Body>
-        <ser:getQuote>       
+        <ser:getQuote>
          <ser:request>
              <ser:symbol>foo</ser:symbol>
-         </ser:request>     
+         </ser:request>
       </ser:getQuote>
    </soapenv:Body>
 </soapenv:Envelope>
-'
 ```
 
 ## Analyze the output

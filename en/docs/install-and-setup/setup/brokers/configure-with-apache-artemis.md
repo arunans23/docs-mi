@@ -1,6 +1,9 @@
 # Connecting to Apache Artemis
 
-This section describes how to configure WSO2 Micro Integrator to connect with Apache Artemis (version 2.6.1).
+This section describes how to configure WSO2 Micro Integrator to connect with Apache Artemis (version 2.39.0).
+
+!!! NOTE
+    The maximum supported Artemis client JAR version is `2.26.0` (`artemis-jms-client-all-2.26.0.jar`). This version is compatible with Apache Artemis server version `2.39.0`.
 
 Follow the instructions below to set up and configure.
 
@@ -48,14 +51,20 @@ Follow the instructions below to set up and configure.
         parameter.connection_factory_name = "TopicConnectionFactory"
         parameter.connection_factory_type = "topic"
         ```
-4.  Remove any existing Apache ActiveMQ client JAR files from the `MI_HOME/dropins/` and `MI_HOME/lib/` directories.  
-5.  Download the [artemis-jms-client-all-2.6.1.jar](https://mvnrepository.com/artifact/org.apache.activemq/artemis-jms-client-all/2.6.1) file and copy it to the `MI_HOME/lib/` directory.  
-6.  Remove the below line from the `MI_HOME/conf/etc/launch.ini` file.  
+      
+        !!! NOTE
+            When using `JMSsender`, the address URI in the Synapse configuration should be in the following format.
+            ```xml
+            jms:/<Queue_Name>?transport.jms.ConnectionFactory=<parameter_name_of_the_connection_factory>
+            ```
+            Example:
+            ```xml
+            <address uri="jms:/TestQueue?transport.jms.ConnectionFactory=commonJmsSenderConnectionFactory"/>
+            ```
 
-    ```text
-    javax.jms,\
-    ```
-7.  Start Apache Artemis. For instructions, see the [Apache Artemis Documentation](https://activemq.apache.org/artemis/docs.html).
-8.  Start the Micro Integrator.
+4.  Remove any existing Apache ActiveMQ client JAR files from the `MI_HOME/dropins/` and `MI_HOME/lib/` directories.  
+5.  Download the [artemis-jms-client-all-2.26.0.jar](https://mvnrepository.com/artifact/org.apache.activemq/artemis-jms-client-all/2.26.0) file and copy it to the `<MI_HOME>/lib/` directory.
+6.  Start Apache Artemis. For instructions, see the [Apache Artemis Documentation](https://activemq.apache.org/components/artemis/documentation/latest/using-server.html).
+7.  Start the Micro Integrator.
 
 Now you have configured instances of Apache Artemis and WSO2 Micro Integrator.

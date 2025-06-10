@@ -28,7 +28,7 @@ Before digging into implementation details, let's take a look at the correlation
 | Message Filter EIP            | Message Filter Sample Scenario                                        | 
 |-------------------------------|-----------------------------------------------------------------------|
 | Quote                         | Stock Quote Request                                                   | 
-| Message Filter                | Filter Mediator is used to filter the content of the incoming message | 
+| Message Filter                | If Else Mediator is used to filter the content of the incoming message | 
 
 ## Synapse configuration of the artifacts
 
@@ -81,7 +81,7 @@ Follow the below instructions to simulate this sample scenario.
 
 6. Execute the following command to start the axis2server with the SimpleStockQuote backend service:
 
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash
           sh axis2server.sh
           ```

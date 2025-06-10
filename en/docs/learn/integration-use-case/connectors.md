@@ -2,7 +2,7 @@
 
 Connectors are a means of interacting with various SaaS applications on the cloud, databases, and popular B2B protocols. See [Connectors Overview]({{base_path}}/reference/connectors/connectors-overview) for more information.
 
-The following are documented connectors available from the [connector store](https://store.wso2.com/store/assets/esbconnector/list). Click the link of the connector to view the documentation for each connector.
+The following connectors are available in the <a target="_blank" href="https://store.wso2.com/">WSO2 Connector Store</a>. Click the link of the connector to view the documentation for each connector.
 
 !!! Info
     For details on connectors not mentioned in this documentation, you can find more information in [WSO2 ESB Connectors documentation](https://wso2docs.atlassian.net/wiki/spaces/ESBCONNECTORS/overview) or in the [GitHub repository of the connector](https://github.com/wso2-extensions) you are looking for.
@@ -71,10 +71,6 @@ The following are documented connectors available from the [connector store](htt
         <tr>
             <th>Connector</th>
             <th>Description</th>
-        </tr>
-        <tr>
-            <td><a href="{{base_path}}/reference/connectors/db-event-inbound-endpoint/db-event-inbound-endpoint-overview/">DB Event Listener</a></td>
-            <td>DB Event Inbound Endpoint is the DB event listener. You can configure it with any popular Database systems such as `MySQL` and `Oracle`.</td>
         </tr>
         <tr>
             <td><a href="{{base_path}}/reference/connectors/fhir-connector/fhir-connector-overview/">FHIR</a></td>

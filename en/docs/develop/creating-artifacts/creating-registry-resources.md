@@ -1,62 +1,46 @@
-# Create a Registry Resource
+# Create a Resource
 
-Initially, your registry resources project will contain only a `pom` file. You can create any number of registry resources inside that project.
+Follow these steps to create a new resource artifact in MI for VS Code.
 
-## Step 1: Create the resource artifact
+{!includes/creating-project.md!}
 
-Select the project in Project Explorer.
+3. To add a new Resource, navigate to **Micro Integrator Project Explorer**.
 
-<img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/registry-resource-add-registry-1.png" width="300">
+4. Click on the **+** icon to open the **Add Artifact** pane.
 
-Click on **+ Add Artifact**. 
+    <a href="{{base_path}}/assets/img/develop/create-artifacts/add-artifact-icon.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/add-artifact-icon.png" alt="add artifact" width="40%"></a>
 
-<img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/registry-resource-add-registry-2.png" width="800">
+5. Click **+ View More** under **Create an Integration**.
 
-Select **Registry** from the appeared menu. 
+6. Click **Resource** under **Other Artifacts** to open the **Resource Creation Form**.
 
-<img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/registry-resource-add-registry-3.png" width="800">
+    This will open the **New Resource** window.
 
-This will open the **New Registry Resource** window.
+    <img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/resource-create-form.png" width="800">
 
-<img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/registry-resource-create-form.png" width="800">
+7. Select one of the following options:
 
-Select one of the following options.
+    - [From existing template](#from-existing-template)
+    - [Import from file system](#import-from-file-system)
 
-- [From existing template](#from-existing-template)
-- [Import from file system](#import-from-file-system)
+    ### From existing template
 
-### From the existing template
+    Use the **From existing template** option if you want to generate a resource from a template.
+    
+    <img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/resource-from-existing-template.png" width="800">
+    
+    Select a resource template for the **Template Type** field. Then enter a unique name for the **Resource Name**. In this example, a **XSLT File** template is used.
+    
+    ### Import from file system
+    
+    Use the **Import from file system** option to import a file.
+    
+    <img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/resource-importing.png" width="800">
+    
+    Use **Browse file** to find the relevant file.
 
-Use the **From existing template** option if you want to generate a registry resource from a template.
+8. Under **Resource Path**, specify the location to save the resource.
 
-<img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/registry-resource-select-existing-template.png" width="800">
-
-Enter a unique name for the **Resource Name**, and **Artifact Name**. Then select a resource template for the **Template Type** field. In this example, a **WSDL File** template is used.
-
-### Import from the file system
-
-Use the **Import from file system** option to import a file or a folder containing registry resources.
-
-!!! Tip
-    This helps you import a resource and collection from the same registry instance or a different registry instance that you have added. Similarly, you can export a resource or collection to the same registry instance or a different registry instance.
-
-<img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/registry-resource-select-importing.png" width="800">
-
-Enter a unique name for the artifact, and use **Browse file/Browse folder** to find the relevant file or folder. 
-
-## Step 2: Save the resource artifact
-
-Specify the location to save the registry resource and click **Create**.
-
-<img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/registry-resource-save.png" width="800">  
-
-<table>
-  <tr>
-    <th>Registry type</th>
-    <td>Specify whether it is a governance registry or a configuration registry.</td>
-  </tr>
-  <tr>
-    <th>Registry path</th>
-    <td>Specify where the registry resource should be saved at the time of deployment.</td>
-  </tr>
-</table>
+    <img src="{{base_path}}/assets/img/integrate/create_artifacts/new_resource/resource-save.png" width="800">   
+   
+9. Once you specify the necessary properties, click **Create**.

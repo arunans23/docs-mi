@@ -12,9 +12,9 @@ From time to time there are new connector versions released. These new versions 
 
 ### Import connectors 
 
-All the connectors are hosted in the [Integration Connector Store](https://store.wso2.com/?page=1&product=MI+Connector). You can download the connector from the store as a .zip file. 
+All the connectors are hosted in the [Integration Connector Store](https://store.wso2.com/?page=1&product=MI+Connector). You can download the connector from the store as a ZIP file. 
 
-<img src="{{base_path}}/assets/img/integrate/connectors/connector-store.jpg" title="Connector store" width="700" alt="Connector store"/>
+<img src="{{base_path}}/assets/img/integrate/connectors/connector-store.png" title="Connector store" width="700" alt="Connector store"/>
 
 The source code for connectors can also be found in the specific [WSO2 extensions GitHub repository](https://github.com/wso2-extensions/).
 
@@ -47,7 +47,7 @@ When importing the connector, you can click and select operations to add them to
 
 Some connectors use message content in the $body to execute the operation. In such situations, you may need to transform the current message in the way the connector operation needs before using that with the connector operation. Following are some of the mediators you can use to transform the message. 
 
-* **[PayloadFactory mediator]({{base_path}}/reference/mediators/payloadfactory-mediator)** - This replaces the current message with a message in the format we specify. We can use the information of the current message to construct this new message.
+* **[Payload mediator]({{base_path}}/reference/mediators/payloadfactory-mediator)** - This replaces the current message with a message in the format we specify. We can use the information of the current message to construct this new message.
 * **[Enrich mediator]({{base_path}}/reference/mediators/enrich-mediator)** - Enrich the current message modifying or adding new elements. This is also useful to save the current message as a property and to place a message in a property as the current message.
 * **[Datamapper mediator]({{base_path}}/reference/mediators/data-mapper-mediator)** - Transform JSON, XML, CSV messages between formats.
 * **[Script mediator]({{base_path}}/reference/mediators/script-mediator)** - Use JavaScript, Groovy, or Ruby scripting languages to transform messages in a custom manner.
@@ -78,7 +78,7 @@ For recently updated connector versions, you need to create a connection, add co
 
 For recently updated connector versions, this is available when you use the MI VS Code extension. When creating a connection you can provide configuration values and they will get saved as a local-entry internally. 
 
-<img src="{{base_path}}/assets/img/integrate/connectors/connection-configuration.jpg" title="Connection configuration" width="450" alt="Connection configuration"/>
+<img src="{{base_path}}/assets/img/integrate/connectors/connection-configuration.png" title="Connection configuration" width="450" alt="Connection configuration"/>
 
 ### For connector versions that were not updated recently
 

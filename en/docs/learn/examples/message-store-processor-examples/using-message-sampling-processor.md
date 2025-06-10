@@ -1,4 +1,5 @@
-# Using the Message Sampling Processor
+# How to Use a Message Sampling Processor
+
 This example demonstrates the usage of the message sampling processor.
 
 ## Synapse configuration
@@ -72,7 +73,7 @@ Set up the back-end service:
 3. Open a terminal, navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
 
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash
           sh axis2server.sh
           ```

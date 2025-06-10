@@ -1227,7 +1227,8 @@ The management API has multiple resources to provide information regarding the d
 		        "list": [
     	    	{
             		"protocol": "http",
-            		"name": "HelloHTTPIEP"
+            		"name": "HelloHTTPIEP",
+            		"status": "active"
     	    	}
     	    	]
 		    }
@@ -1237,6 +1238,25 @@ The management API has multiple resources to provide information regarding the d
 -	**Resource**: `/inbound-endpoints?inboundEndpointName={inboundEndpoint}`
 
 	**Description**: Retrieves information related to a specified inbound endpoint.
+
+### ACTIVATE/DEACTIVATE INBOUND ENDPOINTS
+
+-	**Resource**: `/inbound-endpoints`
+
+	**Description**: Activate or deactivate a specific inbound endpoint. The status can be set to `active` or `inactive` to activate or deactivate the inbound endpoint, respectively.
+
+	!!! note
+		The activate/deactivate capability of inbound endpoints is currently supported only for the `file` inbound endpoint protocol.
+
+	**Example**:
+
+	```bash
+	curl -X POST \
+	 "https://localhost:9164/management/inbound-endpoints" \
+	 -H "Content-Type: application/json" \
+	 -H "Authorization: Bearer TOKEN" \
+	 -d '{"name": "sampleFileInboundEndpoint", "status": "inactive"}'
+	```
 
 ### ENABLE/DISABLE MESSAGE TRACING for INBOUND ENDPOINTS
 
@@ -1878,83 +1898,6 @@ The management API has multiple resources to provide information regarding the d
 	    }
         
 	    ```	
-
-
-### GET TRANSACTION COUNT
-
--	**Resource**: `/transactions/count`
-
-	**Description**: Retrieves the transaction count for the current month.
-
-	**Example**:
-
-    === "Request"
-  	    ```bash 
-  	    curl -X GET "https://localhost:9164/management/transactions/count" -H "accept: application/json" -H "Authorization: Bearer TOKEN" -k -i
-  	    ```
-    === "Response"          
-  	    ```bash 
-  	    {
-  	        "Month": 6,
-  	        "Year": 2020,
-  	        "RequestCount": 74087714
-  	    }
-  	    ```
-
--	**Resource**: `/transactions/count?year={year}&month={month}`
-
-	**Description**: Retrieves the transaction count for the specified year and month.
-
-    **Example**:
- 
-    === "Request"
-  	    ```bash 
-  	    curl -X GET "https://localhost:9164/management/transactions/count?year=2020&month=5" -H "accept: application/json" -H "Authorization: Bearer TOKEN" -k -i
-  	    ```
-    === "Response"        
-  	    ```bash 
-         {
-  	        "Month": 5,
-  	        "Year": 2020,
-  	        "TransactionCount": 25074026
-  	     }
-  	    ```
-
-### GET TRANSACTION REPORT DATA
-
--	**Resource**: `/transactions/report?start={start}&end={end}`
-
-	**Description**: Retrieves the transaction report for the specified period. Generates the transaction report at the `<MI_HOME>/tmp` directory.
-
-	**Example**:
-    
-    === "Request"
-  	    ```bash 
-  	    curl -X GET "https://localhost:9164/management/transactions/report?start=2020-01&end=2020-05" -H "accept: application/json" -H "Authorization: Bearer TOKEN" -k -i
-  	    ```
-    === "Response"         
-  	    ```bash 
-  	    {
-         "TransactionCountData": [[col1, col2, col3, col4],[val1, val2, val3, val4]]
-        }
-  	    ```
-
--	**Resource**: `/transactions/report?start={start}`
-
-	**Description**: Retrieves the transaction report for data starting from the specified date. Generates the transaction report at the `<MI_HOME>/tmp` directory.
-
-	**Example**:
-    
-    === "Request"
-        ```bash 
-  	     curl -X GET "https://localhost:9164/management/transactions/report?start=2020-01" -H "accept: application/json" -H "Authorization: Bearer TOKEN" -k -i
-        ```
-    === "Response"        
-        ```bash
-  	     {
-  	      "TransactionCountData": [[col1, col2, col3, col4],[val1, val2, val3, val4]]
-  	     }
-  	    ```
 
 ### GET REGISTRY DIRECTORY DATA
 

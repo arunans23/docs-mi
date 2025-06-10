@@ -24,7 +24,7 @@ Before digging into implementation details, let's take a look at the relationshi
 | Normalizer EIP  | Normalizer Sample Scenario                                                                                  |
 |---------------------------|------------------------------------------------------------------------------------------------------------------------|
 | Different Message Formats | SOAP, POX, or JSON Stock Quote Request                                                                                 |
-| Router                    | Filter Mediator routes messages based on an existing XPath expression, which identifies format of the message. |
+| Router                    | If Else Mediator routes messages based on an existing XPath expression, which identifies format of the message. |
 | Translators               | XSLT Mediator                                                                                                          |
 | Common Format Message     | SOAP Request from WSO2 MI                                                                                             |
 
@@ -114,7 +114,7 @@ The configuration above first filters out the JSON messages to do the necessary 
 
 Let's investigate the elements of the synapse configuration in detail.
 
-- The Filter mediator looks for a particular XPath expression inside the request message. If the expression evaluates successfully, it is assumed to be a SOAP or POX message, and the mediation continues through the sequence `sendSeq`. If the expression does not evaluate, it is assumed to be a JSON message, and the mediation continues via the `jsonInTransformSeq` sequence.
+- The If Else mediator looks for a particular XPath expression inside the request message. If the expression evaluates successfully, it is assumed to be a SOAP or POX message, and the mediation continues through the sequence `sendSeq`. If the expression does not evaluate, it is assumed to be a JSON message, and the mediation continues via the `jsonInTransformSeq` sequence.
 - The local entry holds an XSL transformation that converts JSON requests to XML.
 - The XSLT mediator applies the defined XSLT to the payload.
 - The address element of the endpoint defines the back-end service and the message format that back-end service prefers. This format is used to normalize a message further, but only when there can be a 1-to-1 mapping between two different formats, for example, between SOAP 1.1 and SOAP 1.2. 
@@ -132,7 +132,7 @@ Follow the below instructions to simulate this sample scenario.
     3. Open a terminal, and navigate to the `axis2Server/bin/` directory inside the extracted folder.
     4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
 
-    === "On MacOS/Linux/CentOS"
+    === "On MacOS/Linux"
         ```bash
         sh axis2server.sh
         ```
@@ -160,46 +160,51 @@ You can test this configuration for JSON, SOAP, and POX messages using the follo
 
 - SOAP
 
-    ```bash
-    curl --location 'http://localhost:8290/services/NormalizerProxy' \
-    --header 'SOAPAction: urn:getQuote' \
-    --header 'Content-Type: text/xml' \
-    --data ' <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    ```
+    POST /services/NormalizerProxy HTTP/1.1
+    Host: localhost:8290
+    SOAPAction: urn:getQuote
+    Content-Type: text/xml
+
+    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
        <soapenv:Body>
           <getQuote xmlns="http://services.samples">
-                <request>
-                   <symbol>WSO2</symbol>
-                </request>
+              <request>
+                  <symbol>WSO2</symbol>
+              </request>
           </getQuote>
        </soapenv:Body>
-    </soapenv:Envelope>'
+    </soapenv:Envelope>
     ```
 
 - JSON
 
-    ```bash
-    curl --location 'http://localhost:8290/services/NormalizerProxy' \
-    --header 'Content-Type: application/json' \
-    --data '{
-    "getQuote": {
-       "request": {
-          "symbol": "WSO2"
+    ```
+    POST /services/NormalizerProxy HTTP/1.1
+    Host: localhost:8290
+    Content-Type: application/json
+
+    {
+       "getQuote": {
+          "request": {
+               "symbol": "WSO2"
+          }
        }
     }
-    }'
     ```
 
 - POX
     ```bash
-    curl --location 'http://localhost:8290/services/NormalizerProxy' \
-    --header 'SOAPAction: urn:getQuote' \
-    --header 'Content-Type: application/xml' \
-    --data '<getQuote xmlns="http://services.samples">
+    POST /services/NormalizerProxy HTTP/1.1
+    Host: localhost:8290
+    SOAPAction: urn:getQuote
+    Content-Type: application/xml
+
+    <getQuote xmlns="http://services.samples">
        <request>
           <symbol>WSO2</symbol>
        </request>
     </getQuote>
-    '
     ```
 
 ## Analyze the output

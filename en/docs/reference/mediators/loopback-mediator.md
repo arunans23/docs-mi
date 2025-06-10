@@ -3,8 +3,7 @@
 The **Loopback Mediator** moves messages from the in flow (request path) to the out flow (response path). All the configuration included in the in sequence that appears after the Loopback mediator is skipped.
 
 !!! Info
-    - The Loopback mediator is a [content-unaware]({{base_path}}/reference/mediators/about-mediators/#classification-of-mediators) mediator.
-    - The messages that have already been passed from the In sequence to the Out sequence cannot be moved to the Out sequence again via the Loopback mediator. 
+    The messages that have already been passed from the In sequence to the Out sequence cannot be moved to the Out sequence again via the Loopback mediator. 
 
 ## Syntax
 
@@ -16,10 +15,10 @@ The loopback token refers to a `<loopback/>` element, which is used to skip the 
 
 ## Example
 
-This example is a main sequence configuration with two [PayloadFactory mediators]({{base_path}}/reference/mediators/payloadfactory-mediator). Assume you only want to use the
+This example is a main sequence configuration with two [Payload mediators]({{base_path}}/reference/mediators/payloadfactory-mediator). Assume you only want to use the
 first factory but need to keep the second factory in the configuration for future reference. The Loopback mediator is added after the first
-PayloadFactory mediator configuration to skip the second PayloadFactory mediator configuration. This configuration will cause the message to be processed
-with the first payload factory and then immediately move to the out flow, skipping the second payload factory in the in flow.
+Payload mediator configuration to skip the second Payload mediator configuration. This configuration will cause the message to be processed
+with the first Payload mediator and then immediately move to the out flow, skipping the second Payload mediator in the in flow.
 
 ``` java
 <proxy name="SimpleProxy" transports="http https" startOnLoad="true" trace="disable" xmlns="http://ws.apache.org/ns/synapse">

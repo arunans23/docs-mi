@@ -11,6 +11,9 @@ See [Creating a Proxy Service]({{base_path}}/develop/creating-artifacts/creating
 
 ## Service-Level parameters
 
+!!! Note
+    If the username or password contains special characters, you will need to use the URL encoded values when defining the File URIs in VFS transport.
+
 <table>
    <thead>
       <tr>
@@ -287,7 +290,7 @@ See [Creating a Proxy Service]({{base_path}}/develop/creating-artifacts/creating
       </tr>
       <tr>
          <td>transport.vfs.FileSortAttribute</td>
-         <td>The attribute by which the files should be sorted and processed. The possible values are <code>NONE</code>, <code>Size</code>, or <code>Lastmodifiedtimestamp</code>.</td>
+         <td>The attribute by which the files should be sorted and processed. The possible values are <code>NONE</code>, <code>Size</code>, <code>Name</code>, or <code>Lastmodifiedtimestamp</code>.</td>
       </tr>
       <tr>
          <td>transport.vfs.FileSortAsscending</td>
@@ -317,6 +320,30 @@ See [Creating a Proxy Service]({{base_path}}/develop/creating-artifacts/creating
          <td>transport.vfs.UpdateLastModified</td>
          <td>
             When this parameter is set to <code>true</code>, the newly created file will have the same last-modified timestamp as the original file. The default setting is <code>true</code>.
+         </td>
+      </tr>
+      <tr>
+         <td>transport.vfs.CheckSizeIgnoreEmpty</td>
+         <td>
+            When this parameter is set to <code>true</code>, empty files are ignored during reading. The default setting is <code>false</code>.
+         </td>
+      </tr>
+      <tr>
+         <td>transport.vfs.CheckSizeInterval</td>
+         <td>
+            The duration in milliseconds between the size checks on files.
+         </td>
+      </tr>
+      <tr>
+         <td>transport.vfs.MinimumAge</td>
+         <td>
+            The minimum duration in seconds for file age since the last modified time.
+         </td>
+      </tr>
+      <tr>
+         <td>transport.vfs.MaximumAge</td>
+         <td>
+            The maximum duration in seconds for file age since the last modified time.
          </td>
       </tr>
    </tbody>
@@ -408,7 +435,7 @@ When you use the [transport.vfs.FileURI](#vfs-transport-file_url) parameter, you
       </tr>
       <tr>
          <td>vfs.ssl.keystore</td>
-         <td>Private key store to use for mutual SSL. Your keystore must be signed by a certificate authority. For more information, see <a href="index">http://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>. Possible value: String (Path of keystore).</td>
+         <td>Private key store to use for mutual SSL. Your keystore must be signed by a certificate authority. For more information, see <a href="https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html">https://docs.oracle.com/cd/E19509-01/820-3503/ggfen/index.html</a>. Possible value: String (Path of keystore).</td>
       </tr>
       <tr>
          <td>vfs.ssl.kspassword</td>

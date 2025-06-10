@@ -15,13 +15,21 @@ Follow the steps given below before you start.
 
     1.  Open the `deployment.toml` file (stored in the `<MI_HOME>/conf/` folder) of the Micro Integrator, and add the following configuration.
 
-        ```toml
-        [dashboard_config]
-        dashboard_url = "https://localhost:9743/dashboard/api/"
-        heartbeat_interval = 5
-        group_id = "mi_dev"
-        node_id = "dev_node_2"
-        ```
+           ```toml
+           [dashboard_config]
+           dashboard_url = "https://{hostname/ip}:{port}/dashboard/api/"
+           heartbeat_interval = "<HEARTBEAT_INTERVAL>"
+           group_id = "<GROUP_ID>"
+           node_id = "<NODE_ID>"
+           ```
+           For example: 
+           ```toml
+           [dashboard_config]
+            dashboard_url = "https://localhost:9743/dashboard/api/"
+            heartbeat_interval = 5
+            group_id = "mi_dev"
+            node_id = "dev_node_2"
+           ```
 
     2.  Be sure to change the host and port number of the `dashboard_url` in the above configuration if you have changed the default host and port for the ICP server.
 
@@ -116,7 +124,7 @@ See the [complete list of parameters]({{base_path}}/reference/config-catalog-int
 
 Follow the steps given below.
 
-1.    Open a command prompt as explained below.
+1. Open a command prompt as explained below.
 
       <table>
             <tr>
@@ -129,17 +137,17 @@ Follow the steps given below.
             </tr>
       </table>     
 
-2.    Navigate to the `<ICP_HOME>/bin` folder from your command line.
-3.    Execute one of the commands given below.
+2. Navigate to the `<ICP_HOME>/bin` folder from your command line.
+3. Execute one of the commands given below.
 
-       === "On macOS/Linux"
-           ```bash 
-           sh dashboard.sh
-           ```
-       === "On Windows"
-           ```bash 
-           dashboard.bat
-           ```
+    === "On macOS/Linux"
+        ```bash 
+        sh dashboard.sh
+        ```
+    === "On Windows"
+        ```bash 
+        dashboard.bat
+        ```
 
 ## Accessing the Integration Control Plane
 

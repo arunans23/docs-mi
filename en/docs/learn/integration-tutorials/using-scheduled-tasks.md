@@ -1,15 +1,15 @@
-# Periodic Execution of Integration Process
+# How to Periodically Execute Integration Processes
 
 ## What you'll build
 
-The sections below demonstrate an example of scheduling a task (using the default implementation) to inject an XML message and print it in the server logs.
+The sections below demonstrate an example of a scheduled trigger (task) that injects an XML message and prints it in the server logs.
 
 ### Concepts and artifacts used
 
-- Sequence
-- Log Mediator
-- Drop Mediator
-- Scheduled Task
+- [Sequence]({{base_path}}/reference/mediation-sequences)
+- [Log Mediator]({{base_path}}/reference/mediators/log-mediator)
+- [Drop Mediator]({{base_path}}/reference/mediators/drop-mediator)
+- [Scheduled Task]({{base_path}}/reference/synapse-properties/scheduled-task-properties)
 
 ## Let's get started!
 
@@ -25,145 +25,136 @@ Follow the instructions given in this section to create and configure the requir
 
 {!includes/create-new-project.md!}
 
-4. In the **Project Creation Form**, enter `SampleServices` as the **Project Name**.
+4. In the **Project Creation Form**, enter `ScheduleTaskTutorial` as the **Project Name**.
 
 5. Provide a location under **Select Project Directory**.
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/create-new-project.png"><img src="{{base_path}}/assets/img/learn/tutorials/sending-simple-message-to-service/create-new-project.png" alt="create new project" width="80%"></a>
+    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/create-new-project.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/create-new-project.png" alt="create new project" width="80%"></a>
 
 6. Click **Create**.
 
 Now let's start designing the integration by adding the necessary artifacts.
 
-#### Create the Sequence
+#### Create a Scheduled trigger (task)
 
-1. Navigate to the **MI Project Explorer** > **Sequences**.
+1. In the **Add Artifact** interface, under **Create an Integration**, click on **Automation**. This opens the Automation Form.
 
-    <a href="{{base_path}}/assets/img/develop/create-artifacts/create-reusable-sequence/create-sequence.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-reusable-sequence/create-sequence.png" alt="create sequence" width="40%"></a>
+    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/automation-artifact.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/automation-artifact.png" alt="create automation artifact" width="80%"></a>
 
-2. Hover over **Sequences** and click the **+** icon that appears.
+    !!! Note
+        WSO2 Micro Integrator supports automation flows that can be triggered either on a schedule or at server startup. It provides two types of automations:
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/add-sequence.png"><img src="{{base_path}}/assets/img/learn/tutorials/add-sequence.png" alt="add sequence" width="40%"></a>
+        - **Scheduled Triggers (Task)** – Executes a task repeatedly based on a defined interval or cron expression. (You will explore this in this tutorial.)
 
-3. In the Sequence Form that appears, provide `InjectXMLSequence` as the **Name**.
+        - **Startup Triggers** – Executes a task once when the Micro Integrator starts, runs the integration, and then shuts down. To learn more, refer to [Running the Micro Integrator in Automation Mode]({{base_path}}/install-and-setup/install/running-the-mi-in-automation-mode/).
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/create-new-sequence.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/create-new-sequence.png" alt="Create new sequence" width="80%"></a>
+2. Enter the details given below to create a new REST API.
 
-4. Click **Create**. Then you will be directed to the **MI Overview** page.
+    <table>
+        <tr>
+            <th style="width: 150px">Property</th>
+            <th>Value</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Automation Type</td>
+            <td><code>Scheduled Trigger</code></td>
+            <td>Specifies the type of automation to be created.</td>
+        </tr>
+        <tr>
+            <td>Task Name</td>
+            <td><code>InjectXMLTask</code></td>
+            <td>The name assigned to the scheduled trigger (task).</td>
+        </tr>
+        <tr>
+            <td>Trigger Mode</td>
+            <td><code>Fixed Interval</code></td>
+            <td>Defines how often the task executes. <b>Fixed Interval</b> triggers the task repeatedly after a set time, or you can choose <b>Cron</b> to configure a cron expression.</td>
+        </tr>
+        <tr>
+            <td>Interval</td>
+            <td><code>5</code></td>
+            <td>The execution interval in seconds. Since <b>Trigger Indefinitely</b> is enabled, the task will continue running indefinitely at the given interval.</td>
+        </tr>
+        <tr>
+            <td>Message</td>
+            <td><pre><code>&lt;request xmlns=""&gt;&lt;location&gt;&lt;city&gt;London&lt;/city&gt;&lt;country&gt;UK&lt;/country&gt;&lt;/location&gt;&lt;/request&gt;</code></pre></td>
+            <td>The XML payload that will be injected when the task is triggered.</td>
+        </tr>
+    </table>
 
-5. Click on `InjectXMLSequence` under **Sequences** that you have just created to open its diagram view.
+    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/new-task.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/new-task.png" alt="create new task" width="80%"></a>
 
-6. Next, add a Log mediator to the sequence. Click the **+** icon and select **Log mediator** from the **Palette** under **Mediators** > **Generic**.
+3. Click **Create**. This will open the integration flow (sequence) that will be executed by the configured Scheduled Trigger.
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/add-log-mediator.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/add-log-mediator.png" alt="Add log mediator" width="80%"></a>
+#### Update the mediation flow
 
-6. Enter the following details in the **Log** details pane.  
-    -  **Log Category**: `INFO`
-    -  **Log Level**: `CUSTOM`
+You can now start designing the integration logic. We will add a [Log Mediator]({{base_path}}/reference/mediators/log-mediator) to log the message when the Scheduled Trigger executes the flow.
 
-7. Under **Properties**, click **Add Parameter** to add a new property with the following details:
-        <table>
-           <tr>
-              <th>Property</th>
-              <th>Description</th>
-           </tr>
-           <tr>
-              <td>Property Name</td>
-              <td><code>City</code></td>
-           </tr>
-           <tr>
-              <td>Property Value</td>
-              <td><code>//city</code></td>
-           </tr> 
-        </table>
-    
-8. Click on `EX` to set the value to the expression type. 
+1. Click on the **+** icon on the canvas to open the **Mediator Palette**.
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/log-details.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/log-details.png" alt="Log details" width="40%"></a>
+2. Under **Mediators**, select the **Log** mediator.
 
-9. Click **Save** to save the properties.
+    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/select_log_mediator.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/select_log_mediator.png" alt="create new task" width="80%"></a>
 
-10. Click **Submit** to save the Log details.
+3. Provide `City = ${xpath("//city")}` as the **Message**, and click **Add** to insert the **Log** mediator into the integration flow.
 
-11. Next, add the Drop mediator. Click on the **+** icon and select **Drop** mediator from **Mediators** > **Generic**.
+4. Click on the **+** icon after the **Log** mediator to open the **Mediator Palette**. We will add a [Drop Mediator]({{base_path}}/reference/mediators/drop-mediator) to stop processing the current message after it is logged.
 
-    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/add-drop-mediator.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/add-drop-mediator.png" alt="Add drop mediator" width="80%"></a>
+5. Under **Mediators**, select the **Drop** mediator, and click **Add** to insert it into the integration flow.
 
-12. Click **Submit**.
+    <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/select_drop_mediator.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/select_drop_mediator.png" alt="create new task" width="80%"></a>
 
-Below is the complete source configuration of the Sequence (i.e., the `InjectXMLSequence.xml` file).
+You have successfully completed the integration flow with the scheduled trigger and logged the message. For reference, you can review the configured scheduled trigger (task) and the sequence.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<sequence name="InjectXMLSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
-    <log category="INFO" level="custom">
-        <property name="City" expression="//city"/>
-    </log>
-    <drop/>
-</sequence>
-```
+??? "InjectXMLTask"
 
-#### Create the Scheduled Task
+    !!! info
+        You can view the source view by clicking on the **Show Source** (`</>`) icon located in the top right corner of the VS Code.
 
-1. Navigate to the **MI Project Explorer** > **Tasks**.
+    === "Design View"
+        <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/task_config.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/task_config.png" alt="InjectXMLTask" width="40%"></a>
 
-    <a href="{{base_path}}/assets/img/develop/create-artifacts/create-scheduled-tasks/create-tasks.png"><img src="{{base_path}}/assets/img/develop/create-artifacts/create-scheduled-tasks/create-tasks.png" alt="create sequence" width="40%"></a>
-
-2. Hover over **Tasks** and click the **+** icon that appears.
-
-    <a href="{{base_path}}/assets/img/learn/tutorials/add-task.png"><img src="{{base_path}}/assets/img/learn/tutorials/add-task.png" alt="add sequence" width="40%"></a>
-
-3. In the Task Form that appears, enter the following details:
-
-    - **Task Name:** `InjectXMLTask`
-    - **Count:** `-1`
-    - **Interval (in seconds):** `5`
-    - **Message inject destination**: `sequence`
-    - **Sequence name**: `InjectXMLSequence`
-    - **Message** : Check **message format is XML** and enter the following as the message:
-
-        ```xml
-        <request xmlns="">   <location>   <city>London</city>    <country>UK</country>   </location>    </request>
+    === "Source View"
+        ```yaml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <task class="org.apache.synapse.startup.tasks.MessageInjector" group="synapse.simple.quartz" name="InjectXMLTask" xmlns="http://ws.apache.org/ns/synapse">
+            <trigger interval="5"/>
+            <property xmlns:task="http://www.wso2.org/products/wso2commons/tasks" name="message"><request xmlns=""><location><city>London</city><country>UK</country></location></request></property>
+            <property xmlns:task="http://www.wso2.org/products/wso2commons/tasks" name="injectTo" value="sequence"/>
+            <property xmlns:task="http://www.wso2.org/products/wso2commons/tasks" name="sequenceName" value="InjectXMLTaskSequence"/>
+        </task>
         ```
 
-4. Click **Create**.
+??? "InjectXMLTaskSequence"
 
-Below is the complete source configuration of the scheduled task.
+    !!! info
+        You can view the source view by clicking on the **Show Source** (`</>`) icon located in the top right corner of the VS Code.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<task class="org.apache.synapse.startup.tasks.MessageInjector" group="synapse.simple.quartz" name="InjectXMLTask" xmlns="http://ws.apache.org/ns/synapse">
-   <trigger count="-1" interval="5"/>
-   <property xmlns:task="http://www.wso2.org/products/wso2commons/tasks" name="message"><request xmlns="">   <location>   <city>London</city>    <country>UK</country>   </location>    </request>
-   </property>
-   <property xmlns:task="http://www.wso2.org/products/wso2commons/tasks" name="injectTo" value="sequence"/>
-   <property xmlns:task="http://www.wso2.org/products/wso2commons/tasks" name="sequenceName" value="InjectXMLSequence"/>
-</task>
-``` 
+    === "Design View"
+        <a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/sequence_config.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/sequence_config.png" alt="InjectXMLTaskSequence" width="70%"></a>
+
+    === "Source View"
+        ```yaml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <sequence name="InjectXMLTaskSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+            <log category="INFO" logMessageID="false" logFullPayload="false">
+                <message>City = ${xpath(&quot;//city&quot;)}</message>
+            </log>
+            <drop/>
+        </sequence>
+        ```
 
 ### Step 3: Build and run the artifacts
 
-{!includes/build-and-run-artifacts.md!}
+Now that you have developed an integration using the Micro Integrator for the Visual Studio Code plugin, it's time to deploy the integration to the Micro Integrator server runtime.
+
+Click the **Build and Run** icon located in the top right corner of VS Code.
+
+<a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/build_and_run_btn.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/build_and_run_btn.png" alt="Build and Run" width="80%"></a>
 
 ### Step 4: Test the use case
 
-You will view the XML message you injected getting printed in the logs of the Micro Integrator every 5 seconds.
+When you run the integration artifact as described in [Step 3](#step-3-build-and-run-the-artifacts), you will see the injected XML message being printed in the Micro Integrator logs every 5 seconds, in the **Output** tab of VS Code.
 
-```xml
-   2024-07-17 17:43:06,257]  INFO {AbstractQuartzTaskManager} - Task scheduled: [ESB_TASK][InjectXMLTask].
-   [2024-07-17 17:43:06,285]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:07,944]  INFO {AuthenticationHandlerAdapter} - User admin logged in successfully
-   [2024-07-17 17:43:11,261]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:16,262]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:21,262]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:26,262]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:31,261]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:36,262]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:41,257]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:46,262]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:51,262]  INFO {LogMediator} - City = London
-   [2024-07-17 17:43:56,260]  INFO {LogMediator} - City = London
-   [2024-07-17 17:44:01,260]  INFO {LogMediator} - City = London
-   [2024-07-17 17:44:06,262]  INFO {LogMediator} - City = London
-   [2024-07-17 17:44:11,261]  INFO {LogMediator} - City = London
-```
+<a href="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/output_log.png"><img src="{{base_path}}/assets/img/learn/tutorials/using-scheduled-tasks/output_log.png" alt="MI output logs" width="80%"></a>

@@ -1,4 +1,4 @@
-# Creating Unit Test Suite
+# Create a Unit Test Suite
 
 Once you have developed an integration solution, WSO2 Micro Integrator VS Code Extension allows you to build unit tests for the following:
 
@@ -34,7 +34,7 @@ Once you have developed an integration solution, WSO2 Micro Integrator VS Code E
     1. Enter a name for the test case.
    
         !!! Note
-             For APIs, you also need to specify the **Request Path** and **Request Method** in this section. The **Request Path** indicates the URL mapping of the API resource. If the URL mapping consists some parameter(s), replace those with values. Also the **Request Method** indicates the REST method of the resource.
+             For APIs, you also need to specify the **Resource Path** and **Resource Method** in this section. The **Resource Path** indicates the URL mapping of the API resource. If the URL mapping consists some parameter(s), replace those with values. Also the **Resource Method** indicates the REST method of the resource.
 
     2. Update the **Input Payload and Properties** section:
 
@@ -155,3 +155,14 @@ Once you have developed an integration solution, WSO2 Micro Integrator VS Code E
      To use this option, in the **Create New Test Suite** page click on the **Generate Unit Tests with AI** button after giving a name for the test suite and selecting the artifact to be used for the test suite. 
     
      <img src="{{base_path}}/assets/img/develop/unit-tests/generate-with-ai.png" alt="generate test" width="700">
+
+!!! Note
+    Additionally, the tests automatically run when executing `mvn clean install`. If you want to run unit tests with your configured server, follow the steps:
+
+    1. Run a separate Micro Integrator Instance in unit testing mode. To start the server in unit testing mode, you can pass the argument `-DsynapseTest` as below. If you want to change the synapse testing port, you can pass the `-DsynapseTestPort=<new Port>` argument. Default port is `9008`. It is recommended running on a new MI server without any previously deployed integrations to avoid conflicts.
+    
+        `sh micro-integrator.sh -DsynapseTest`
+
+    2. Navigate to the integration project location and run the following command.
+
+        `mvn clean install -DtestServerType=remote -DtestServerHost=localhost -DtestServerPort=9008 -P test`

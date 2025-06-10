@@ -1,24 +1,21 @@
 # Log Mediator
 
-The **Log mediator** is used to log mediated messages. For more information on logging, see [Monitoring Logs]({{base_path}}/observe-and-manage/classic-observability-logs/monitoring-logs/).
+The **Log mediator** enables the logging of messages as they flow through mediation sequences. It helps in debugging and tracking messages by printing message content, variables, properties, and other relevant information to the console or a log file. It can be added at any point in the flow.
 
-!!! Info
-	The Log mediator is a [conditionally content aware]({{base_path}}/reference/mediators/about-mediators/#classification-of-mediators) mediator.
+For more information on logging, see [Monitoring Logs]({{base_path}}/observe-and-manage/classic-observability-logs/monitoring-logs/).
 
 ## Syntax
 
-The log token refers to a `<log/>` element, which may be
-used to log messages being mediated.
-
 ```xml
-<log [category="string"] [level="string"] [separator="string"]>
-   <property name="string" (value="literal" | expression="[XPath|json-eval(JSON Path)]")/>*
+<log [category="INFO|TRACE|DEBUG|WARN|ERROR|FATAL"] [separator="string"] logMessageID=(true | false) logFullPayload=(true | false)>
+   <message></message>
+   <property name="string" (value="string" | expression="expression")/>+
 </log>
 ```
 
 ## Configuration
 
-The general parameters available to configure the Log mediator are as
+The parameters available to configure the Log mediator are as
 follows.
 
 <table>
@@ -31,42 +28,45 @@ follows.
 <tbody>
 <tr class="odd">
 <td><strong>Log Category</strong></td>
-<td><p>This parameter is used to specify the log category. Possible values are as follows. Following log levels correspond to the ESB profile service level logs.</p>
+<td><p>This parameter is used to specify the log category. The following log levels correspond to the Micro Integrator service level logs.</p>
 <ul>
-<li><strong>TRACE</strong> - This designates fine-grained informational events than the DEBUG.</li>
-<li><strong>DEBUG</strong> - This designates fine-grained informational events that are most useful to debug an application.</li>
-<li><strong>INFO</strong> - This designates informational messages that highlight the progress of the application at coarse-grained level.</li>
-<li><strong>WARN</strong> - This designates potentially harmful situations.</li>
-<li><strong>ERROR</strong> - This designates error events that might still allow the application to continue running.</li>
-<li><p><strong>FATAL</strong> - This designate s very severe error events that will presumably lead the application to abort.</p></li>
+<li><strong>INFO</strong> - provides informational messages that highlight the progress of the application at a coarse-grained level.</li>
+<li><strong>TRACE</strong> - provides fine-grained informational events than the DEBUG level.</li>
+<li><strong>DEBUG</strong> - provides fine-grained informational events that are most useful to debug an application.</li>
+<li><strong>WARN</strong> - provides informational messages on potentially harmful situations.</li>
+<li><strong>ERROR</strong> - provides error events that might still allow the application to continue running.</li>
+<li><p><strong>FATAL</strong> - provides very severe error events that will presumably lead the application to abort.</p></li>
 </ul></td>
 </tr>
 <tr class="even">
-<td><div class="content-wrapper">
-<p><strong>Log Level</strong></p>
-</div></td>
-<td><div class="content-wrapper">
-<p>This parameter is used to specify the log level. The possible values are as follows.</p>
+<td><strong>Append Message ID</strong></td>
+<td>
+Determines whether the Message ID is included in the log along with other selected details.
 <ul>
-<li><strong>Full</strong> : If this is selected, all the standard headers logged at the <strong>Simple</strong> level as well as the full payload of the message will be logged. This log level causes the message content to be parsed and hence incurs a performance overhead.</li>
-<li><strong>Simple</strong> : If this is selected, the standard headers (i.e. <code>                To               </code> , <code>                From               </code> , <code>                WSAction               </code> , <code>                SOAPAction               </code> , <code>                ReplyTo               </code> , and <code>                MessageID               </code> ) will be logged.</li>
-<li><strong>Headers</strong> : If this is selected, all the SOAP header blocks are logged.</li>
-<li><strong>Custom</strong> : If this is selected, only the properties added to the Log mediator configuration will be logged.</li>
+  <li><strong>True</strong>: Includes the Message ID in the log.</li>
+  <li><strong>False</strong>: Excludes the Message ID from the log. (Default)</li>
 </ul>
-<p>The properties included in the Log mediator configuration will be logged regardless of the log level selected.</p>
-</div></td>
+</td>
 </tr>
 <tr class="odd">
-<td><strong>Log Separator</strong></td>
-<td><div class="content-wrapper">
-<p>This parameter is used to specify a value to be used in the log to separate attributes. The <code>               ,              </code> comma is default.</p>
-<p>Use only the <strong>Source View</strong> to add a tab (i.e., by defining the <code>               separator="&amp;#x9;"              </code> parameter in the syntax) or a new line (i.e., by defining the <code>               separator="&amp;#xA;"              </code> parameter in the syntax ) as the <strong>Log Separator</strong> , since the <strong>Design View</strong> does not support this.</p>
-</div></td>
+<td><strong>Append Payload</strong></td>
+<td>
+Determines whether the full message payload is included in the log along with other selected details.
+<ul>
+  <li><strong>True</strong>: Includes the full message payload in the log.</li>
+  <li><strong>False</strong>: Excludes the message payload from the log. (Default)</li>
+</ul>
+</td>
+</tr>
+<tr class="even">
+<td><strong>Message</strong></td>
+<td>
+<p>This parameter is used to define a log message. You can embed <a href="{{base_path}}/reference/synapse-properties/synapse-expressions">Synapse Expressions</a> in the template to generate the log message.</p></td>
 </tr>
 </tbody>
 </table>
 
-The parameters available to configure a property are as follows:
+You can use the <strong>Additional Parameters</strong> section to log additional information. The configurations available under <strong>Additional Parameters</strong> section of the Log mediator are as follows.
 
 <table>
 <thead>
@@ -77,50 +77,64 @@ The parameters available to configure a property are as follows:
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Property Name</strong></td>
-<td>The name of the property to be logged.</td>
-</tr>
-<tr class="even">
-<td><strong>Property Value</strong></td>
-<td><p>The possible values for this parameter are as follows:</p>
+<td><strong>Parameters</strong></td>
+<td><p>This is used to specify the key value pairs to be logged. You can use the <code>Add Parameter</code> option to add a new parameter.
 <ul>
-<li><strong>Value</strong>: If this is selected, a static value would be considered as the property value and this value should be entered in the <strong>Value/Expression</strong> parameter.</li>
-<li><p><strong>Expression</strong>: If this is selected, the property value will be determined during mediation by evaluating an expression. This expression should be entered in the <strong>Value/Expression</strong> parameter.</p></li>
-</ul></td>
-</tr>
-<tr class="odd">
-<td><strong>Value/Expression</strong></td>
-<td><div class="content-wrapper">
-<p>This parameter is used to enter a status value as the property value, or to enter an expression to evaluate the property value based on the what you entered for the <strong>Property Value</strong> parameter. When specifying a JSONPath, use the format <code>json-eval(&lt;JSON_PATH&gt;)</code> , such as <code>json-eval(getQuote.request.symbol)</code>.</p>
-</div></td>
+<li><strong>Name</strong> - The name of the parameter to be logged.</li>
+<li><strong>Value</strong> - Based on the use case you can either have a static value or an <a href="{{base_path}}/reference/synapse-properties/synapse-expressions">expression</a>.</li>
+</ul></p></td>
 </tr>
 <tr class="even">
-<td><strong>Action</strong></td>
-<td>This parameter allows the property to be deleted.</td>
+<td><strong>Parameter Separator</strong></td>
+<td>
+<p>This parameter specifies the value used to separate parameters in the log. By default, the separator is a comma (<code>,</code>).</p></td>
 </tr>
 </tbody>
 </table>
 
 ## Examples
 
-### Use full log
+### Using a message template
 
-In this example, everything is logged including the complete SOAP
-message.
+In this example, we define a message template using [Synapse Expressions]({{base_path}}/reference/synapse-properties/synapse-expressions).
 
 ```xml
-<log category="INFO" level="full"/>
+<log category="INFO">
+   <message>Processing user details : ${payload.user} with Purchase data : ${var.purchaseDetails}</message>
+</log>
 ```
 
-### Use custom logs
+A sample log output:
+```xml
+[2024-09-09 15:23:03,998]  INFO {LogMediator} - {api:StockQuoteAPI} Processing user details : {"firstName":"Johne", "lastName": "Doe"} with Purchase data : {"itemCode": 8987, "price": 45}
+```
 
-In this example, the log level is `         custom        ` . A property
-with an XPath expression which is used to get a stock price from a
-message is included. This results in logging the stock, price which is a
-dynamic value.
+### Logging message ID
+
+In this example, we enable logging of the message ID by setting `logMessageID="true"` in the log configuration. Additionally, we define a message template using [Synapse Expressions]({{base_path}}/reference/synapse-properties/synapse-expressions).
+
+```xml
+<log category="INFO" logMessageID="true">
+   <message>Test message ${payload}</message>
+</log>
+```
+
+A sample log output:
+```xml
+[2025-02-27 21:18:38,015]  INFO {LogMediator} - {api:TestApi POST /testapi/} MessageID: urn:uuid:7137bda5-065d-41b9-85c9-1b23b8c3fd8e, correlation_id: 7137bda5-065d-41b9-85c9-1b23b8c3fd8e, Test message {"payload":"Hello World"}
+```
+
+### Using parameters in addition to message template
+
+In this example, we define parameters in addition to the message.
 
 ```xml 
-<log category="INFO" level="custom">
-   <property name="text" expression="fn:concat('Stock price - ',get-property('stock_price'))"/>
+<log category="INFO">
+   <message>Processing user details : ${payload.user} with Purchase data : ${var.purchaseDetails}</message>
+   <property name="endpoint" expression="${var.endpointName}"/>
 </log>
+```
+A sample log output:
+```xml
+[2024-09-09 15:23:03,998]  INFO {LogMediator} - {api:StockQuoteAPI} Processing user details : {"firstName":"Johne", "lastName": "Doe"} with Purchase data : {"itemCode": 8987, "price": 45}, endpoint = PurchaseEP
 ```

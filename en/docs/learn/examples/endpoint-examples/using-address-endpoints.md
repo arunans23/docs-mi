@@ -1,4 +1,5 @@
-# Using the Address Endpoint
+# How to Use an Address Endpoint
+
 This sample demonstrates how you can convert a POX message to a SOAP request using an <b>Address</b> endpoint.
 
 ## Synapse configuration
@@ -45,7 +46,7 @@ Set up the back-end service:
 3. Open a terminal, navigate to the `axis2Server/bin/` directory inside the extracted folder.
 4. Execute the following command to start the axis2server with the SimpleStockQuote back-end service:
 
-    === "On MacOS/Linux/CentOS"   
+    === "On MacOS/Linux"   
           ```bash
           sh axis2server.sh
           ```
