@@ -34,7 +34,7 @@ jobs:
           python-version: '3.9'
 
       - name: Cache pip dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('en/requirements.txt') }}
@@ -219,7 +219,7 @@ jobs:
           ls -la screenshots/
 
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: preview-screenshots
           path: screenshots/
