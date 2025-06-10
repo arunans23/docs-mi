@@ -424,7 +424,7 @@ To use the Amazon DynamoDB connector, add the <amazondynamodb.init> element in y
     See the [related API documentation](http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html) for more information.
     <table>
         <tr>
-            <th>Parameter Name</th>
+            <th>Parameter Name test</th>
             <th>Description</th>
             <th>Required</th>
         </tr>
