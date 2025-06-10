@@ -1,0 +1,351 @@
+name: PR Documentation Preview with Deploy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'en/docs/**'
+      - 'en/mkdocs.yml'
+      - 'en/requirements.txt'
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      pages: write
+      id-token: write
+    
+    outputs:
+      has_changes: ${{ steps.changed-files.outputs.has_changes }}
+      preview_url: ${{ steps.deploy.outputs.page_url }}
+      changed_pages: ${{ steps.changed-files.outputs.changed_pages }}
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('en/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          cd en
+          pip install -r requirements.txt
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Get list of changed markdown files
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'en/docs/**/*.md')
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          
+          if [ ! -z "$CHANGED_FILES" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            
+            # Process changed files into URLs
+            CHANGED_PAGES=""
+            while IFS= read -r file; do
+              if [ ! -z "$file" ]; then
+                # Convert path like 'en/docs/get-started/introduction.md' to 'get-started/introduction/'
+                URL_PATH=$(echo "$file" | sed 's|^en/docs/||' | sed 's|\.md$|/|' | sed 's|index/|/|')
+                CHANGED_PAGES="${CHANGED_PAGES}${URL_PATH},"
+              fi
+            done <<< "$CHANGED_FILES"
+            
+            # Remove trailing comma
+            CHANGED_PAGES=$(echo "$CHANGED_PAGES" | sed 's/,$//')
+            echo "changed_pages=$CHANGED_PAGES" >> $GITHUB_OUTPUT
+            echo "Changed pages for screenshots: $CHANGED_PAGES"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No markdown files changed"
+          fi
+
+      - name: Update base_path for preview
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          cd en
+          # Create a temporary mkdocs.yml with updated base_path for GitHub Pages
+          cp mkdocs.yml mkdocs-preview.yml
+          # Update the base_path to use the GitHub Pages URL structure
+          sed -i 's|base_path: https://mi.docs.wso2.com/en/4.4.0|base_path: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.number }}|g' mkdocs-preview.yml
+
+      - name: Build documentation
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          cd en
+          mkdocs build --config-file mkdocs-preview.yml --site-dir ../site
+
+      - name: Setup Pages
+        if: steps.changed-files.outputs.has_changes == 'true'
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        if: steps.changed-files.outputs.has_changes == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+      - name: Deploy to GitHub Pages
+        if: steps.changed-files.outputs.has_changes == 'true'
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+  take-screenshots:
+    needs: build-preview
+    runs-on: ubuntu-latest
+    if: needs.build-preview.outputs.has_changes == 'true'
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Playwright
+        run: |
+          npm install playwright
+          npx playwright install chromium
+
+      - name: Take screenshots of changed pages
+        run: |
+          mkdir -p screenshots
+          
+          cat > take_screenshots.js << 'EOF'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          
+          (async () => {
+            const browser = await chromium.launch();
+            const context = await browser.newContext({
+              viewport: { width: 1200, height: 800 }
+            });
+            
+            const baseUrl = process.argv[2];
+            const pages = process.argv[3].split(',').filter(p => p.length > 0);
+            
+            console.log(`Base URL: ${baseUrl}`);
+            console.log(`Pages to screenshot: ${pages.join(', ')}`);
+            
+            for (let i = 0; i < Math.min(pages.length, 3); i++) {
+              const pagePath = pages[i];
+              const page = await context.newPage();
+              
+              try {
+                const fullUrl = `${baseUrl}/${pagePath}`;
+                console.log(`Taking screenshot of: ${fullUrl}`);
+                
+                await page.goto(fullUrl, { 
+                  waitUntil: 'networkidle',
+                  timeout: 30000 
+                });
+                
+                // Wait for content to load
+                await page.waitForTimeout(3000);
+                
+                // Try to find main content area, fallback to body
+                const selectors = ['.md-content__inner', '.md-content', 'main', 'body'];
+                let element = null;
+                
+                for (const selector of selectors) {
+                  element = await page.$(selector);
+                  if (element) break;
+                }
+                
+                const filename = `screenshots/page-${i + 1}-${pagePath.replace(/\//g, '-')}.png`;
+                
+                if (element) {
+                  await element.screenshot({ 
+                    path: filename,
+                    quality: 90
+                  });
+                } else {
+                  await page.screenshot({ 
+                    path: filename,
+                    fullPage: true,
+                    quality: 90
+                  });
+                }
+                
+                console.log(`Screenshot saved: ${filename}`);
+                
+              } catch (error) {
+                console.error(`Error taking screenshot for ${pagePath}:`, error);
+                // Take a basic screenshot as fallback
+                await page.screenshot({ 
+                  path: `screenshots/page-${i + 1}-error.png`,
+                  quality: 90
+                });
+              }
+              
+              await page.close();
+            }
+            
+            await browser.close();
+          })();
+          EOF
+          
+          # Take screenshots
+          PREVIEW_URL="${{ needs.build-preview.outputs.preview_url }}"
+          CHANGED_PAGES="${{ needs.build-preview.outputs.changed_pages }}"
+          
+          # Wait for the site to be available
+          echo "Waiting for preview site to be available..."
+          sleep 30
+          
+          node take_screenshots.js "$PREVIEW_URL" "$CHANGED_PAGES"
+          
+          ls -la screenshots/
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: preview-screenshots
+          path: screenshots/
+          retention-days: 7
+
+      - name: Comment PR with preview and screenshots
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Get list of screenshot files
+            const screenshotsDir = 'screenshots';
+            let screenshots = [];
+            
+            if (fs.existsSync(screenshotsDir)) {
+              const files = fs.readdirSync(screenshotsDir);
+              screenshots = files.filter(f => f.endsWith('.png')).slice(0, 3); // Limit to 3 screenshots
+            }
+            
+            const prNumber = context.payload.pull_request.number;
+            const previewUrl = '${{ needs.build-preview.outputs.preview_url }}';
+            const changedPages = '${{ needs.build-preview.outputs.changed_pages }}'.split(',');
+            
+            let commentBody = `## 📋 Documentation Preview
+            
+            🚀 **Live Preview**: [View Documentation Preview](${previewUrl})
+            
+            This PR includes changes to ${changedPages.length} documentation page(s).
+            
+            ### 📸 Screenshots of Changed Pages:
+            
+            `;
+            
+            // Add screenshots to comment
+            for (let i = 0; i < screenshots.length; i++) {
+              const screenshotPath = path.join(screenshotsDir, screenshots[i]);
+              if (fs.existsSync(screenshotPath)) {
+                const imageBuffer = fs.readFileSync(screenshotPath);
+                const base64Image = imageBuffer.toString('base64');
+                
+                const pageName = changedPages[i] || `Page ${i + 1}`;
+                commentBody += `
+            #### 📄 ${pageName}
+            
+            ![${pageName} Preview](data:image/png;base64,${base64Image})
+            
+            `;
+              }
+            }
+            
+            commentBody += `
+            ---
+            
+            ### 🔗 Quick Links:
+            - 🌐 [Full Preview Site](${previewUrl})
+            - 📁 [View Changes in Files Tab](https://github.com/${{ github.repository }}/pull/${prNumber}/files)
+            - 🚀 [Workflow Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            <details>
+            <summary>🔧 Technical Details</summary>
+            
+            - **Build Status**: ✅ Success
+            - **Pages Changed**: ${changedPages.length}
+            - **Preview URL**: ${previewUrl}
+            - **MkDocs Version**: Built with latest configuration
+            - **Timestamp**: ${new Date().toISOString()}
+            
+            </details>
+            
+            💡 **Note**: The preview will be available for the duration of this PR and will be updated automatically when you push new commits.`;
+            
+            // Check if there's already a preview comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+            
+            const existingComment = comments.data.find(comment => 
+              comment.body.includes('📋 Documentation Preview') && 
+              comment.user.login === 'github-actions[bot]'
+            );
+            
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: commentBody
+              });
+            }
+
+  cleanup-on-close:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+    permissions:
+      contents: read
+      pull-requests: write
+    
+    steps:
+      - name: Comment on PR closure
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            
+            const commentBody = `## 🧹 Preview Cleanup
+            
+            This PR has been closed. The documentation preview is no longer available.
+            
+            Thank you for your contribution to the WSO2 Micro Integrator documentation! 🙏`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: commentBody
+            });
