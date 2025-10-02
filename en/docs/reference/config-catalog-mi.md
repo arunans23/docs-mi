@@ -10876,6 +10876,86 @@ inbound.max_threads = 100</code></pre>
 </div>
 
 
+## REST API - CORS Configuration
+
+To enable CORS for the REST APIs globally, you need to configure the API's CORS settings in the `deployment.toml` file:
+
+<div class="mb-config-catalog">
+    <section>
+        <div class="mb-config-options">
+            <div class="superfences-tabs">
+
+            <input name="56" type="checkbox" id="_tab_56">
+                <label class="tab-selector" for="_tab_56"><i class="icon fa fa-code"></i></label>
+                <div class="superfences-content" style="display: none;">
+                    <div class="mb-config-example">
+<pre><code class="toml">[[synapse_handlers]]
+name = <handler_name>
+class = <handler_class>
+</code></pre>
+                    </div>
+                </div>
+                <div class="doc-wrapper">
+                    <div class="mb-config">
+                        <div class="config-wrap">
+                            <code>[[synapse_properties]]</code>
+                            <span class="badge-required">Required</span>
+                            <p>
+                                This configuration header is required for configuring a synapse handler with the name and the implementation class.
+                            </p>
+                        </div>
+                        <div class="params-wrap">
+                            <div class="param">
+                                <div class="param-name">
+                                  <span class="param-name-wrap"> <code>synapse.rest.CORSConfig.enabled</code> </span>
+                                </div>
+                                <div class="param-info">
+                                    <div>
+                                        <p>
+                                            <span class="param-type string"> string </span>
+                                            <span class="badge-required">Required</span>
+                                        </p>
+                                        <div class="param-default">
+                                            <span class="param-default-value">Default: <code>-</code></span>
+                                        </div>
+                                        <div class="param-possible">
+                                            <span class="param-possible-values">Possible Values: <code>-</code></span>
+                                        </div>
+                                    </div>
+                                    <div class="param-description">
+                                        <p>Enable/Disable CORS for the API in the server level.</p>
+                                    </div>
+                                </div>
+                            </div><div class="param">
+                                <div class="param-name">
+                                  <span class="param-name-wrap"> <code>class</code> </span>
+                                </div>
+                                <div class="param-info">
+                                    <div>
+                                        <p>
+                                            <span class="param-type string"> string </span>
+                                            <span class="badge-required">Required</span>
+                                        </p>
+                                        <div class="param-default">
+                                            <span class="param-default-value">Default: <code>-</code></span>
+                                        </div>
+                                        <div class="param-possible">
+                                            <span class="param-possible-values">Possible Values: <code>-</code></span>
+                                        </div>
+                                    </div>
+                                    <div class="param-description">
+                                        <p>The synapse handler implementation.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
 ## Synapse Handlers
 
 <div class="mb-config-catalog">
